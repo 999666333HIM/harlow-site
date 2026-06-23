@@ -1,0 +1,7 @@
+name = "harlow-site"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "harlow-db"
+database_id = "0b1027cf-c4ed-4e00-bf47-84bb3a5bb07a"
