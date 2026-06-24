@@ -386,17 +386,17 @@ function renderProducts(){
     const card=document.createElement('div');
     card.className='product-card';
     card.innerHTML=`
-      <div class="product-img">
-        ${p.hot?'<div class="hot-tag">HOT</div>':''}
-        ${p.rating>=4.8?'<div class="top-tag">⭐ TOP</div>':''}
-        ${p.thumbnail?'<img src="'+p.thumbnail+'" alt="'+p.name+'" loading="lazy">':'<span>'+p.icon+'</span>'}
-      </div>
-      <div class="product-body">
-        <div class="product-name">'+p.name+'</div>
-        <div class="product-price">$'+p.price+'</div>
-        <div class="product-stars">'+stars(p.rating)+' ('+Number(p.reviews).toLocaleString()+')</div>
-        <button class="add-btn '+(inCart?'added':'')+'">'+(inCart?'✓ Added':'+ Add to Cart')+'</button>
-      </div>`;
+  <div class="product-img">
+    ${p.hot?'<div class="hot-tag">HOT</div>':''}
+    ${p.rating>=4.8?'<div class="top-tag">⭐ TOP</div>':''}
+    ${p.thumbnail?`<img src="${p.thumbnail}" alt="${p.name}" loading="lazy">`:`<span>${p.icon||'🛍️'}</span>`}
+  </div>
+  <div class="product-body">
+    <div class="product-name">${p.name}</div>
+    <div class="product-price">$${p.price}</div>
+    <div class="product-stars">${stars(p.rating)} (${Number(p.reviews).toLocaleString()})</div>
+    <button class="add-btn ${inCart?'added':''}">${inCart?'✓ Added':'+ Add to Cart'}</button>
+  </div>`;
     card.querySelector('.add-btn').onclick=e=>{e.stopPropagation();toggleCart(p);};
     card.onclick=()=>openModal(p);
     grid.appendChild(card);
