@@ -20,7 +20,7 @@ const SEARCH_TERMS = [
   'garden gloves','plant pot','watering can','grow light','pruning shears',
 ];
 
-const BATCH_SIZE = 3;
+const BATCH_SIZE = 5;
 
 function markupPrice(p){
   if(!p || p === 0) return 0;
