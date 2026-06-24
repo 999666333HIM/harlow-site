@@ -116,9 +116,9 @@ async function searchAliExpress(term, apiKey){
 export async function onRequest(context){
   const {env} = context;
 
-  if(!env.RAPIDAPI_KEY){
-    return new Response(JSON.stringify({error:'Missing RAPIDAPI_KEY'}),{status:500});
-  }
+ if(!env.RAPIDAPI_KEY){
+  return new Response(JSON.stringify({error:'Missing RAPIDAPI_KEY', allEnvKeys:Object.keys(env)}),{status:500});
+}
   if(!env.DB){
     return new Response(JSON.stringify({error:'Missing DB binding'}),{status:500});
   }
