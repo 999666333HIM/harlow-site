@@ -22,6 +22,7 @@ export async function onRequest(context){
   else if(sort==='rating') orderBy='ORDER BY rating DESC';
 
   try{
+    if(!env.DB) return new Response(JSON.stringify({error:'DB not bound',env:Object.keys(env)}),{status:500});
     const countResult = await env.DB.prepare(
       'SELECT COUNT(*) as total FROM products '+where
     ).bind(...params).first();
