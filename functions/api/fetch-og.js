@@ -25,6 +25,7 @@ export async function onRequest(context){
   }
 
   if(!html) return new Response(JSON.stringify({error:'Could not fetch page'}),{status:400});
+console.log('HTML length:', html.length, 'First 500:', html.slice(0,500));
 
   const get=(prop)=>{
     const m=html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=["']([^"']+)["']`,'i'))
