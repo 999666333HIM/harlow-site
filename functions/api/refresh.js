@@ -150,12 +150,19 @@ export async function onRequest(context){
       if(!results.length){ summary[term]=0; continue; }
 
       let inserted = 0;
-      for(let i = 0; i < results.length; i++){
-        const entry = results[i];
-        const item = entry.item || entry;
-        const rawPrice = parseFloat(item.sku?.def?.promotionPrice || item.promotionPrice || item.price || 0);
-        const price = markupPrice(rawPrice);
-        if(price < 8 || rawPrice === 0) continue;
+      const excludeTerms = ['eu plug','uk plug','au plug','220v only','230v','240v',
+  'european plug','british plug','australian plug','no us plug','220-240v',
+  '230-240v','for europe','for uk','for australia'];
+
+for(let i = 0; i < results.length; i++){
+  const entry = results[i];
+  const item = entry.item || entry;
+  const rawPrice = parseFloat(item.sku?.def?.promotionPrice || item.promotionPrice || item.price || 0);
+  const price = markupPrice(rawPrice);
+  if(price < 8 || rawPrice === 0) continue;
+
+  const titleLower = (item.title||'').toLowerCase();
+  if(excludeTerms.some(t => titleLower.includes(t))) continue;
 
         const id = 'ae-'+item.itemId+'-'+term.replace(/\s/g,'-');
         const thumbnail = item.image?(item.image.startsWith('http')?item.image:'https:'+item.image):null;
