@@ -3,29 +3,46 @@ export async function onRequest(context){
   const url = new URL(request.url).searchParams.get('url');
   if(!url) return new Response(JSON.stringify({error:'No URL'}),{status:400});
 
-  // Try multiple approaches
-  const attempts = [
-    // Direct fetch
-    ()=>fetch(url,{headers:{
-      'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
-      'Accept':'text/html,application/xhtml+xml',
-      'Accept-Language':'en-US,en;q=0.9',
-    }}),
-    // AllOrigins proxy
-    ()=>fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url))
-      .then(r=>r.json()).then(d=>new Response(d.contents,{status:200})),
+  const proxies = [
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+    `https://htmlpreview.github.io/?${encodeURIComponent(url)}`,
   ];
 
+  const headers = {
+    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language':'en-US,en;q=0.5',
+  };
+
   let html='';
-  for(const attempt of attempts){
-    try{
-      const res=await attempt();
-      if(res.ok){html=await res.text();break;}
-    }catch(e){continue;}
+
+  // Try direct first
+  try{
+    const res=await fetch(url,{headers});
+    if(res.ok) html=await res.text();
+  }catch(e){}
+
+  // Try proxies
+  if(!html){
+    for(const proxy of proxies){
+      try{
+        const res=await fetch(proxy,{headers});
+        if(res.ok){
+          const text=await res.text();
+          // allorigins wraps in JSON
+          if(proxy.includes('allorigins')){
+            try{html=JSON.parse(text).contents||'';}catch(e){html=text;}
+          }else{
+            html=text;
+          }
+          if(html.length>500) break;
+        }
+      }catch(e){continue;}
+    }
   }
 
-  if(!html) return new Response(JSON.stringify({error:'Could not fetch page'}),{status:400});
-console.log('HTML length:', html.length, 'First 500:', html.slice(0,500));
+  if(!html) return new Response(JSON.stringify({error:'Could not fetch — this site blocks automated requests. Fill in manually.'}),{status:400});
 
   const get=(prop)=>{
     const m=html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=["']([^"']+)["']`,'i'))
