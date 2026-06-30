@@ -2,12 +2,17 @@ name = "harlow-site"
 compatibility_date = "2024-01-01"
 workers_dev = true
 
+main = "functions/cron.js"
+
 [assets]
 directory = "."
 not_found_handling = "single-page-application"
-exclude = [".git", ".wrangler", "node_modules", "wrangler.toml", "README.md", "functions"]
+exclude = [".git", ".wrangler", "node_modules", "wrangler.toml", "README.md"]
 
 [[d1_databases]]
 binding = "DB"
 database_name = "harlow-db"
-database_id = "0b1027cf-c4ed-4e00-bf47-84bb3a5bb07a"
+database_id = "PASTE_YOUR_D1_ID_HERE"
+
+[triggers]
+crons = ["0 0 * * *"]
