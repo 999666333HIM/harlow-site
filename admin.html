@@ -860,9 +860,16 @@ async function deleteManualProduct(index){
 // ── CATALOG ──
 async function loadCatalog(){
   try{
-    const res=await fetch('/api/products?limit=500&page=0');
-    const data=await res.json();
-    allProducts=data.products||[];
+    let allProds=[];
+    let page=0;
+    while(true){
+      const res=await fetch('/api/products?limit=500&page='+page);
+      const data=await res.json();
+      allProds=[...allProds,...(data.products||[])];
+      if(allProds.length>=data.total||!data.products?.length) break;
+      page++;
+    }
+    allProducts=allProds;
     updateCatalogStats();renderCatalog();
     document.getElementById('catalogLoading').style.display='none';
     document.getElementById('catalogTable').style.display='table';
