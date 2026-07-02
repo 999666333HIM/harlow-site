@@ -184,23 +184,30 @@ textarea.form-input{resize:vertical;min-height:68px;}
 .preview-cat{font-size:0.72rem;color:var(--muted);margin-bottom:6px;}
 .preview-price{font-family:'JetBrains Mono',monospace;font-size:1.2rem;color:var(--blue);font-weight:700;margin-bottom:4px;}
 .preview-desc{font-size:0.78rem;color:var(--muted);line-height:1.5;}
-.manual-list{margin-top:20px;}
-.manual-list-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;}
-.manual-row{display:flex;align-items:center;gap:10px;background:var(--surface);
+
+/* IMPORTS SECTION */
+.imports-section{margin-top:24px;}
+.imports-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.imports-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);}
+.load-imports-btn{padding:7px 14px;background:var(--surface);border:1.5px solid var(--blue);
+  color:var(--blue);border-radius:7px;font-size:0.8rem;font-weight:600;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all 0.2s;}
+.load-imports-btn:hover{background:var(--blue);color:#fff;}
+.import-row{display:flex;align-items:center;gap:10px;background:var(--surface);
   border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
-.manual-thumb{width:40px;height:40px;border-radius:7px;object-fit:contain;
+.import-thumb{width:40px;height:40px;border-radius:7px;object-fit:contain;
   background:var(--surface2);border:1px solid var(--border);flex-shrink:0;}
-.manual-info{flex:1;}
-.manual-name{font-size:0.84rem;font-weight:600;color:var(--dark);}
-.manual-meta{font-size:0.72rem;color:var(--muted);margin-top:2px;}
-.manual-price{font-family:'JetBrains Mono',monospace;font-size:0.95rem;color:var(--blue);font-weight:700;flex-shrink:0;}
-.manual-edit{background:transparent;border:1.5px solid var(--border);color:var(--blue);
+.import-info{flex:1;}
+.import-name{font-size:0.84rem;font-weight:600;color:var(--dark);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px;}
+.import-meta{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+.import-price{font-family:'JetBrains Mono',monospace;font-size:0.95rem;color:var(--blue);font-weight:700;flex-shrink:0;}
+.import-edit{background:transparent;border:1.5px solid var(--border);color:var(--blue);
   border-radius:6px;padding:5px 10px;font-size:0.75rem;cursor:pointer;font-family:'Inter',sans-serif;}
-.manual-edit:hover{border-color:var(--blue);background:rgba(37,99,235,0.05);}
-.manual-delete{background:transparent;border:1.5px solid rgba(220,38,38,0.2);color:var(--red);
+.import-edit:hover{border-color:var(--blue);background:rgba(37,99,235,0.05);}
+.import-delete{background:transparent;border:1.5px solid rgba(220,38,38,0.2);color:var(--red);
   border-radius:6px;padding:5px 10px;font-size:0.75rem;cursor:pointer;font-family:'Inter',sans-serif;}
-.manual-delete:hover{background:rgba(220,38,38,0.06);}
+.import-delete:hover{background:rgba(220,38,38,0.06);}
 
 /* ANALYTICS */
 .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
@@ -297,7 +304,7 @@ textarea.form-input{resize:vertical;min-height:68px;}
     <div class="tab" onclick="switchTab('catalog')">📦 Catalog</div>
   </div>
 
-  <!-- ORDERS (PENDING) -->
+  <!-- ORDERS -->
   <div class="tab-content active" id="tab-orders">
     <div class="stats-row">
       <div class="stat-card"><div class="stat-val" id="statPending">—</div><div class="stat-lbl">Pending orders</div></div>
@@ -347,7 +354,6 @@ textarea.form-input{resize:vertical;min-height:68px;}
       <div>
         <div class="form-card">
           <h3>➕ Add Product to Store</h3>
-          <!-- URL AUTO-FILL -->
           <div class="form-group">
             <label class="form-label">Auto-fill from URL</label>
             <div class="url-fetch-row">
@@ -393,7 +399,7 @@ textarea.form-input{resize:vertical;min-height:68px;}
           </div>
           <div class="form-group">
             <label class="form-label">Source / Buy Link</label>
-            <input type="text" class="form-input" id="pSourceUrl" placeholder="https://amazon.com/… or AliExpress, Walmart, etc.">
+            <input type="text" class="form-input" id="pSourceUrl" placeholder="https://amazon.com/…">
           </div>
           <div class="form-group">
             <label class="form-label">Description</label>
@@ -418,9 +424,14 @@ textarea.form-input{resize:vertical;min-height:68px;}
           <div class="success-msg" id="successMsg">✓ Product added! It's now live on your store.</div>
           <div class="error-msg" id="errorMsg"></div>
         </div>
-        <div class="manual-list">
-          <div class="manual-list-title">Your manual products</div>
-          <div id="manualProductsList"><div style="color:var(--muted);font-size:0.84rem;">No manual products yet.</div></div>
+
+        <!-- IMPORTS SECTION -->
+        <div class="imports-section">
+          <div class="imports-header">
+            <div class="imports-title">Extension Imports & Manual Products</div>
+            <button class="load-imports-btn" onclick="loadImports()">Load Imports →</button>
+          </div>
+          <div id="importsList"><div style="color:var(--muted);font-size:0.84rem;">Click "Load Imports" to see all products added via the extension or manually.</div></div>
         </div>
       </div>
       <div>
@@ -458,9 +469,9 @@ textarea.form-input{resize:vertical;min-height:68px;}
         <option value="stock">Stock: low → high</option>
       </select>
     </div>
-    <div class="table-wrap">
-      <div class="loading" id="catalogLoading">Loading catalog…</div>
-      <table id="catalogTable" style="display:none;">
+    <div class="loading" id="catalogLoading">Loading catalog… this may take a moment for large catalogs.</div>
+    <div class="table-wrap" id="catalogWrap" style="display:none;">
+      <table id="catalogTable">
         <thead>
           <tr>
             <th>Product</th><th>Sell price</th><th>Est. profit</th>
@@ -495,7 +506,7 @@ textarea.form-input{resize:vertical;min-height:68px;}
 <script>
 const ADMIN_PASSWORD='wibilow2026';
 const AVG_SHIPPING=6;
-let allOrders=[],allProducts=[],filteredProducts=[],manualProducts=[],editingIndex=-1;
+let allOrders=[],allProducts=[],filteredProducts=[],editingId=null;
 let catModalIndex=0;
 
 function login(){
@@ -521,14 +532,13 @@ function switchTab(name){
 
 async function loadAll(){
   await Promise.all([loadOrders(),loadCatalog()]);
-  loadManualProducts();
   renderAnalytics();
 }
 
 // ── URL AUTO-FILL ──
 async function fetchFromUrl(){
   const url=document.getElementById('pUrl').value.trim();
-  if(!url){return;}
+  if(!url) return;
   const btn=document.getElementById('fetchUrlBtn');
   const status=document.getElementById('urlFetchStatus');
   btn.disabled=true;btn.textContent='Fetching…';
@@ -551,24 +561,16 @@ async function fetchFromUrl(){
   btn.disabled=false;btn.textContent='Fetch →';
 }
 
-// ── CATEGORY HANDLING ──
 function handleCatChange(){
   const sel=document.getElementById('pCat');
   const custom=document.getElementById('pCatCustom');
-  if(sel.value==='__new__'){
-    custom.style.display='block';
-    custom.focus();
-  }else{
-    custom.style.display='none';
-  }
+  custom.style.display=sel.value==='__new__'?'block':'none';
   updatePreview();
 }
 
 function getSelectedCat(){
   const sel=document.getElementById('pCat');
-  if(sel.value==='__new__'){
-    return document.getElementById('pCatCustom').value.trim()||'General';
-  }
+  if(sel.value==='__new__') return document.getElementById('pCatCustom').value.trim()||'General';
   return sel.value;
 }
 
@@ -601,10 +603,10 @@ function renderOrders(){
   const f=JSON.parse(localStorage.getItem('wb2_fulfilled')||'{}');
   const orders=allOrders.filter(o=>!f[o.id]);
   if(!orders.length){
-    container.innerHTML='<div class="empty"><div style="font-size:2.5rem;margin-bottom:12px;">📭</div><p style="font-weight:600;color:var(--muted);">No pending orders.<br>New orders will appear here.</p></div>';
+    container.innerHTML='<div class="empty"><div style="font-size:2.5rem;margin-bottom:12px;">📭</div><p style="font-weight:600;color:var(--muted);">No pending orders.</p></div>';
     return;
   }
-  container.innerHTML=orders.map(order=>buildOrderCard(order,false)).join('');
+  container.innerHTML=orders.map(o=>buildOrderCard(o,false)).join('');
 }
 
 function renderFulfilled(){
@@ -615,7 +617,7 @@ function renderFulfilled(){
     container.innerHTML='<div class="empty"><div style="font-size:2.5rem;margin-bottom:12px;">✓</div><p style="font-weight:600;color:var(--muted);">No fulfilled orders yet.</p></div>';
     return;
   }
-  container.innerHTML=orders.map(order=>buildOrderCard(order,true,f[order.id])).join('');
+  container.innerHTML=orders.map(o=>buildOrderCard(o,true,f[o.id])).join('');
 }
 
 function buildOrderCard(order,isFulfilled,fulfilledTs){
@@ -684,7 +686,7 @@ function markFulfilled(id){
   updateOrderStats();renderOrders();renderFulfilled();renderAnalytics();
 }
 function markPending(id){
-  if(!confirm('Send this back to the pending orders queue?')) return;
+  if(!confirm('Send this back to pending?')) return;
   const f=JSON.parse(localStorage.getItem('wb2_fulfilled')||'{}');
   delete f[id];localStorage.setItem('wb2_fulfilled',JSON.stringify(f));
   updateOrderStats();renderOrders();renderFulfilled();renderAnalytics();
@@ -747,11 +749,8 @@ function updatePreview(){
   document.getElementById('previewPrice').textContent='$'+finalPrice.toFixed(2);
   document.getElementById('previewDesc').textContent=desc;
   const imgEl=document.getElementById('previewImg');
-  if(image){
-    imgEl.innerHTML='<img src="'+image+'" alt="" style="width:100%;height:100%;object-fit:contain;padding:16px;" onerror="this.parentElement.innerHTML=\'🛍️\'">';
-  }else{
-    imgEl.innerHTML='🛍️';
-  }
+  if(image){imgEl.innerHTML='<img src="'+image+'" alt="" style="width:100%;height:100%;object-fit:contain;padding:16px;" onerror="this.parentElement.innerHTML=\'🛍️\'">';}
+  else{imgEl.innerHTML='🛍️';}
 }
 
 async function addProduct(){
@@ -772,9 +771,9 @@ async function addProduct(){
   if(!price||price<=0){errorMsg.textContent='Please enter a valid price.';errorMsg.style.display='block';return;}
   btn.textContent='Adding…';btn.disabled=true;
   const finalPrice=markup>0?Math.round((price+markup)*100)/100:Math.round(price*1.02*100)/100;
-  const isEditing=editingIndex>=0;
+  const isEditing=!!editingId;
   const product={
-    id:isEditing?manualProducts[editingIndex].id:'manual-'+Date.now(),
+    id:isEditing?editingId:'manual-'+Date.now(),
     name,cat,icon:'🛍️',price:finalPrice,rating,
     reviews:Math.floor(Math.random()*5000)+100,hot:false,
     desc:desc||'Shipped direct to your door.',
@@ -789,10 +788,8 @@ async function addProduct(){
     });
     const data=await res.json();
     if(!res.ok) throw new Error(data.error||'Failed to add product');
-    if(isEditing){manualProducts[editingIndex]=product;editingIndex=-1;btn.textContent='Add to Store →';}
-    else{manualProducts.unshift(product);}
-    localStorage.setItem('wb2_manual',JSON.stringify(manualProducts));
-    renderManualProducts();
+    editingId=null;
+    btn.textContent='Add to Store →';
     ['pName','pPrice','pImage','pSourceUrl','pDesc','pMarkup'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('pStock').value='50';
     document.getElementById('pRating').value='4.5';
@@ -804,37 +801,49 @@ async function addProduct(){
   }catch(err){
     errorMsg.textContent='Error: '+err.message;errorMsg.style.display='block';
   }
-  btn.textContent=editingIndex>=0?'Save Changes →':'Add to Store →';btn.disabled=false;
+  btn.textContent=editingId?'Save Changes →':'Add to Store →';btn.disabled=false;
 }
 
-function loadManualProducts(){
-  manualProducts=JSON.parse(localStorage.getItem('wb2_manual')||'[]');
-  renderManualProducts();
-}
-
-function renderManualProducts(){
-  const container=document.getElementById('manualProductsList');
-  if(!manualProducts.length){
-    container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No manual products yet.</div>';
-    return;
+// ── IMPORTS ──
+async function loadImports(){
+  const container=document.getElementById('importsList');
+  container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">Loading…</div>';
+  try{
+    let allImports=[];
+    let page=0;
+    while(true){
+      const res=await fetch('/api/products?limit=500&page='+page);
+      const data=await res.json();
+      const manual=(data.products||[]).filter(p=>p.manual);
+      allImports=[...allImports,...manual];
+      if(allImports.length>=data.total||!data.products?.length||(data.products||[]).filter(p=>p.manual).length===0&&page>0) break;
+      page++;
+      if(page>10) break;
+    }
+    if(!allImports.length){
+      container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No imported or manual products found.</div>';
+      return;
+    }
+    container.innerHTML=allImports.map(p=>`
+      <div class="import-row">
+        ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
+        <div class="import-info">
+          <div class="import-name" title="${p.name}">${p.name}</div>
+          <div class="import-meta">${p.cat} · Stock: ${p.stock}${p.source_url?` · <a href="${p.source_url}" target="_blank" style="color:var(--blue);">Source ↗</a>`:''}</div>
+        </div>
+        <div class="import-price">$${p.price}</div>
+        <button class="import-edit" onclick="editImport(${JSON.stringify(p).replace(/"/g,'&quot;')})">Edit</button>
+        <button class="import-delete" onclick="deleteImport('${p.id}',this)">Remove</button>
+      </div>`).join('');
+  }catch(e){
+    container.innerHTML='<div style="color:var(--red);font-size:0.84rem;">Failed to load imports.</div>';
   }
-  container.innerHTML=manualProducts.map((p,i)=>`
-    <div class="manual-row">
-      ${p.thumbnail?`<img src="${p.thumbnail}" class="manual-thumb" alt="">`:`<div class="manual-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">${p.icon||'🛍️'}</div>`}
-      <div class="manual-info">
-        <div class="manual-name">${p.name}</div>
-        <div class="manual-meta">${p.cat} · Stock: ${p.stock}${p.source_url?` · <a href="${p.source_url}" target="_blank" style="color:var(--blue);">Source ↗</a>`:''}</div>
-      </div>
-      <div class="manual-price">$${p.price}</div>
-      <button class="manual-edit" onclick="editProduct(${i})">Edit</button>
-      <button class="manual-delete" onclick="deleteManualProduct(${i})">Remove</button>
-    </div>`).join('');
 }
 
-function editProduct(index){
-  const p=manualProducts[index];editingIndex=index;
-  document.getElementById('pName').value=p.name;
-  document.getElementById('pPrice').value=p.price;
+function editImport(p){
+  editingId=p.id;
+  document.getElementById('pName').value=p.name||'';
+  document.getElementById('pPrice').value=p.price||'';
   document.getElementById('pCat').value=p.cat||'General';
   document.getElementById('pImage').value=p.thumbnail||'';
   document.getElementById('pSourceUrl').value=p.source_url||'';
@@ -843,41 +852,51 @@ function editProduct(index){
   document.getElementById('pRating').value=p.rating||4.5;
   document.getElementById('pMarkup').value='';
   document.getElementById('addProductBtn').textContent='Save Changes →';
-  switchTab('add');updatePreview();
+  updatePreview();
   document.getElementById('pName').scrollIntoView({behavior:'smooth'});
   document.getElementById('pName').focus();
 }
 
-async function deleteManualProduct(index){
+async function deleteImport(id,btn){
   if(!confirm('Remove this product from your store?')) return;
-  const product=manualProducts[index];
-  try{await fetch('/api/add-product',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:product.id})});}catch(e){}
-  manualProducts.splice(index,1);
-  localStorage.setItem('wb2_manual',JSON.stringify(manualProducts));
-  renderManualProducts();
+  try{
+    await fetch('/api/add-product',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:id})});
+    btn.closest('.import-row').remove();
+  }catch(e){alert('Failed to delete product.');}
 }
 
 // ── CATALOG ──
 async function loadCatalog(){
   try{
+    // Load all products by paginating through all pages
     let allProds=[];
     let page=0;
+    let total=0;
+    document.getElementById('catalogLoading').style.display='block';
+    document.getElementById('catalogWrap').style.display='none';
     while(true){
       const res=await fetch('/api/products?limit=500&page='+page);
       const data=await res.json();
+      total=data.total||0;
       allProds=[...allProds,...(data.products||[])];
-      if(allProds.length>=data.total||!data.products?.length) break;
+      document.getElementById('catalogLoading').textContent=
+        'Loading catalog… '+allProds.length+' of '+total+' products loaded';
+      if(allProds.length>=total||!(data.products||[]).length) break;
       page++;
     }
     allProducts=allProds;
-    updateCatalogStats();renderCatalog();
+    updateCatalogStats();
+    renderCatalog();
     document.getElementById('catalogLoading').style.display='none';
-    document.getElementById('catalogTable').style.display='table';
+    document.getElementById('catalogWrap').style.display='block';
+    // Populate category filter
     const cats=[...new Set(allProducts.map(p=>p.cat))].sort();
     const sel=document.getElementById('catalogCat');
     sel.innerHTML='<option value="">All categories</option>';
     cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
-  }catch(e){document.getElementById('catalogLoading').textContent='Failed to load catalog.';}
+  }catch(e){
+    document.getElementById('catalogLoading').textContent='Failed to load catalog.';
+  }
 }
 
 function updateCatalogStats(){
@@ -916,7 +935,8 @@ function renderCatalog(){
   }
   document.getElementById('catalogEmpty').style.display='none';
   document.getElementById('catalogTable').style.display='table';
-  list.slice(0,200).forEach((p,i)=>{
+  // Render up to 500 at a time for performance
+  list.slice(0,500).forEach((p,i)=>{
     const profit=parseFloat(estimateProfit(p.price));
     const pc=profit>5?'profit-good':profit>0?'profit-ok':'profit-bad';
     const sc=(p.stock||0)<5?'stock-low':'stock-high';
@@ -929,7 +949,7 @@ function renderCatalog(){
           ${p.thumbnail?`<img src="${p.thumbnail}" class="product-thumb" alt="">`:`<div class="product-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${p.icon||'🛍️'}</div>`}
           <div>
             <div class="product-name-cell" title="${p.name}">${p.name}</div>
-            <div class="product-cat-cell">${p.cat} ${p.hot?'<span class="hot-badge">HOT</span>':''}</div>
+            <div class="product-cat-cell">${p.cat} ${p.hot?'<span class="hot-badge">HOT</span>':''} ${p.manual?'<span class="source-badge">Manual</span>':''}</div>
           </div>
         </div>
       </td>
@@ -944,25 +964,19 @@ function renderCatalog(){
 
 // ── CATALOG MODAL ──
 function openCatModal(index){
-  catModalIndex=index;
-  renderCatModal();
+  catModalIndex=index;renderCatModal();
   document.getElementById('catModalOverlay').classList.add('open');
 }
-
-function closeCatModal(){
-  document.getElementById('catModalOverlay').classList.remove('open');
-}
-
+function closeCatModal(){document.getElementById('catModalOverlay').classList.remove('open');}
 function navigateCatModal(delta){
-  const max=Math.min(filteredProducts.length,200)-1;
+  const max=Math.min(filteredProducts.length,500)-1;
   catModalIndex=Math.max(0,Math.min(max,catModalIndex+delta));
   renderCatModal();
 }
-
 function renderCatModal(){
   const p=filteredProducts[catModalIndex];
   if(!p) return;
-  const max=Math.min(filteredProducts.length,200);
+  const max=Math.min(filteredProducts.length,500);
   document.getElementById('catModalCounter').textContent=`${catModalIndex+1} of ${max}`;
   document.getElementById('prevBtn').disabled=catModalIndex===0;
   document.getElementById('nextBtn').disabled=catModalIndex>=max-1;
@@ -979,14 +993,12 @@ function renderCatModal(){
     <div class="cat-modal-meta">
       <span class="cat-modal-tag">Est. profit: ${profit>0?'+':''}$${profit}</span>
       <span class="cat-modal-tag">${p.manual?'Manual':p.source_url?.includes('aliexpress')?'AliExpress':'External'}</span>
-      ${p.hot?'<span class="cat-modal-tag" style="color:var(--blue);border-color:rgba(37,99,235,0.3);">🔥 HOT</span>':''}
+      ${p.hot?'<span class="cat-modal-tag" style="color:var(--blue);">🔥 HOT</span>':''}
     </div>
-    ${p.source_url?`<a href="${p.source_url}" target="_blank" class="cat-modal-link">View source ↗</a>`:''}`;
+    ${p.source_url?`<a href="${p.source_url}" target="_blank" class="cat-modal-link">View source ↗</a>`:''}
+    ${p.manual?`<button onclick="editImport(${JSON.stringify(p).replace(/"/g,'&quot;')});closeCatModal();switchTab('add')" style="padding:8px 16px;background:var(--blue);color:#fff;border:none;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:600;margin-top:4px;">Edit this product →</button>`:''}`;
 }
-
-document.getElementById('catModalOverlay').addEventListener('click',e=>{
-  if(e.target.id==='catModalOverlay') closeCatModal();
-});
+document.getElementById('catModalOverlay').addEventListener('click',e=>{if(e.target.id==='catModalOverlay')closeCatModal();});
 document.addEventListener('keydown',e=>{
   if(!document.getElementById('catModalOverlay').classList.contains('open')) return;
   if(e.key==='ArrowLeft') navigateCatModal(-1);
