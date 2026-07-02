@@ -814,11 +814,11 @@ async function loadImports(){
     while(true){
       const res=await fetch('/api/products?limit=500&page='+page);
       const data=await res.json();
-      const manual=(data.products||[]).filter(p=>p.manual);
+      const manual=(data.products||[]).filter(p=>p.manual==1||p.manual===true);
       allImports=[...allImports,...manual];
-      if(allImports.length>=data.total||!data.products?.length||(data.products||[]).filter(p=>p.manual).length===0&&page>0) break;
+      if((data.products||[]).length<500) break;
       page++;
-      if(page>10) break;
+      if(page>20) break;
     }
     if(!allImports.length){
       container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No imported or manual products found.</div>';
@@ -829,14 +829,13 @@ async function loadImports(){
         ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
         <div class="import-info">
           <div class="import-name" title="${p.name}">${p.name}</div>
-          <div class="import-meta">${p.cat} · Stock: ${p.stock}${p.source_url?` · <a href="${p.source_url}" target="_blank" style="color:var(--blue);">Source ↗</a>`:''}</div>
+          <div class="import-meta">${p.cat} · $${p.price}${p.source_url?` · <a href="${p.source_url}" target="_blank" style="color:var(--blue);">Source ↗</a>`:''}</div>
         </div>
-        <div class="import-price">$${p.price}</div>
-        <button class="import-edit" onclick="editImport(${JSON.stringify(p).replace(/"/g,'&quot;')})">Edit</button>
+        <button class="import-edit" onclick='editImport(${JSON.stringify(p)})'>Edit</button>
         <button class="import-delete" onclick="deleteImport('${p.id}',this)">Remove</button>
       </div>`).join('');
   }catch(e){
-    container.innerHTML='<div style="color:var(--red);font-size:0.84rem;">Failed to load imports.</div>';
+    container.innerHTML='<div style="color:var(--red);font-size:0.84rem;">Error: '+e.message+'</div>';
   }
 }
 
