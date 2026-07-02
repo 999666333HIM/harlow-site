@@ -875,7 +875,7 @@ async function loadCatalog(){
     document.getElementById('catalogLoading').style.display='block';
     document.getElementById('catalogWrap').style.display='none';
     while(true){
-      const res=await fetch('/api/products?limit=500&page='+page);
+      const res=await fetch('/api/products?limit=500&page='+page+'&manual=1');
       const data=await res.json();
       total=data.total||0;
       allProds=[...allProds,...(data.products||[])];

@@ -14,6 +14,8 @@ export async function onRequest(context){
   const params = [minPrice, maxPrice];
 
   if(cat){ where += ' AND cat = ?'; params.push(cat); }
+const manual = url.searchParams.get('manual');
+if(manual==='1'){ where += ' AND manual = 1'; }
   if(q){ where += ' AND name LIKE ?'; params.push('%'+q+'%'); }
 
   let orderBy = 'ORDER BY reviews DESC';
