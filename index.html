@@ -58,6 +58,64 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
 .hero-stat-val{font-family:'JetBrains Mono',monospace;font-size:1.5rem;color:var(--blue);font-weight:700;}
 .hero-stat-lbl{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
 
+/* FEATURED SECTION */
+.featured-section{padding:40px 48px;background:var(--white);border-bottom:1px solid var(--border);}
+.featured-section.hidden{display:none;}
+.featured-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;
+  color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.featured-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* 2 TOP FEATURED CARDS */
+.featured-top{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.featured-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;
+  overflow:hidden;cursor:pointer;transition:all 0.2s;display:flex;}
+.featured-card:hover{border-color:var(--blue);box-shadow:0 8px 32px rgba(37,99,235,0.12);}
+.featured-card-img{width:200px;flex-shrink:0;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;font-size:3rem;}
+.featured-card-img img{width:100%;height:100%;object-fit:contain;padding:16px;}
+.featured-card-body{padding:20px;flex:1;display:flex;flex-direction:column;justify-content:center;}
+.featured-card-cat{font-size:0.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--blue);margin-bottom:6px;}
+.featured-card-name{font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:8px;line-height:1.3;}
+.featured-card-price{font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:var(--blue);
+  font-weight:700;margin-bottom:12px;}
+.featured-card-btn{display:inline-flex;padding:8px 18px;background:var(--blue);color:#fff;
+  border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.84rem;
+  font-weight:600;cursor:pointer;transition:background 0.2s;align-self:flex-start;}
+.featured-card-btn:hover{background:var(--blue2);}
+
+/* ROTATING BANNER */
+.featured-banner{position:relative;border-radius:16px;overflow:hidden;
+  background:var(--surface);border:1.5px solid var(--border);height:220px;cursor:pointer;}
+.featured-banner:hover{border-color:var(--blue);}
+.banner-slides{display:flex;transition:transform 0.5s ease;height:100%;}
+.banner-slide{min-width:100%;display:flex;align-items:center;padding:24px 32px;gap:28px;}
+.banner-slide-img{width:180px;height:170px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:4rem;background:var(--surface2);border-radius:12px;}
+.banner-slide-img img{width:100%;height:100%;object-fit:contain;padding:12px;}
+.banner-slide-info{flex:1;}
+.banner-badge{display:inline-block;background:rgba(37,99,235,0.1);color:var(--blue);
+  border:1px solid rgba(37,99,235,0.2);border-radius:999px;padding:4px 12px;
+  font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;}
+.banner-name{font-size:1.3rem;font-weight:700;color:var(--dark);margin-bottom:8px;line-height:1.2;}
+.banner-price{font-family:'JetBrains Mono',monospace;font-size:1.8rem;color:var(--blue);
+  font-weight:700;margin-bottom:16px;}
+.banner-btn{padding:10px 22px;background:var(--blue);color:#fff;border:none;
+  border-radius:8px;font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;
+  cursor:pointer;transition:background 0.2s;}
+.banner-btn:hover{background:var(--blue2);}
+.banner-dots{position:absolute;bottom:12px;right:16px;display:flex;gap:6px;}
+.banner-dot{width:8px;height:8px;border-radius:50%;background:rgba(37,99,235,0.2);
+  cursor:pointer;transition:background 0.2s;}
+.banner-dot.active{background:var(--blue);}
+.banner-arrow{position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,0.9);border:1px solid var(--border);border-radius:50%;
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;color:var(--dark);transition:all 0.2s;z-index:2;}
+.banner-arrow:hover{border-color:var(--blue);color:var(--blue);}
+.banner-arrow.left{left:12px;}
+.banner-arrow.right{right:12px;}
+
 .cat-bar{display:flex;gap:8px;padding:12px 48px;overflow-x:auto;
   border-bottom:1px solid var(--border);background:var(--white);}
 .cat-bar::-webkit-scrollbar{display:none;}
@@ -128,13 +186,12 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
 .load-more-btn:hover{background:var(--blue);color:#fff;}
 .load-more-btn:disabled{opacity:0.5;cursor:not-allowed;}
 
-/* MODAL — compact, fits viewport */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;
   opacity:0;pointer-events:none;transition:opacity 0.2s;
   display:flex;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
 .modal-card{background:var(--white);border:1px solid var(--border);border-radius:16px;
-  width:100%;max-width:780px;height:auto;max-height:calc(100vh - 32px);
+  width:100%;max-width:780px;max-height:calc(100vh - 32px);
   box-shadow:0 16px 48px rgba(0,0,0,0.15);transform:translateY(16px);
   transition:transform 0.2s;display:flex;flex-direction:column;overflow:hidden;}
 .modal-overlay.open .modal-card{transform:translateY(0);}
@@ -149,8 +206,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
   display:flex;align-items:center;justify-content:center;}
 .modal-close:hover{border-color:var(--blue);color:var(--blue);}
 .modal-info{flex:1;padding:24px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
-.modal-cat{font-size:0.68rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:0.12em;color:var(--blue);}
+.modal-cat{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--blue);}
 .modal-name{font-size:1.15rem;font-weight:700;line-height:1.2;color:var(--dark);}
 .modal-rating{display:flex;align-items:center;gap:8px;font-size:0.82rem;}
 .modal-rating .stars{color:var(--accent);}
@@ -178,8 +234,6 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
   font-size:0.88rem;font-weight:600;cursor:pointer;background:transparent;
   color:var(--muted);border:1.5px solid var(--border);transition:all 0.2s;}
 .modal-buy-btn:hover{border-color:var(--blue);color:var(--blue);}
-
-/* SIMILAR */
 .modal-similar{padding:16px 24px;border-top:1px solid var(--border);flex-shrink:0;}
 .modal-similar-title{font-size:0.68rem;font-weight:700;text-transform:uppercase;
   letter-spacing:0.1em;color:var(--muted);margin-bottom:10px;}
@@ -189,14 +243,12 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
   border-radius:8px;padding:10px;cursor:pointer;transition:all 0.15s;
   min-width:100px;flex-shrink:0;text-align:center;}
 .modal-similar-card:hover{border-color:var(--blue);}
-.modal-similar-img{height:56px;display:flex;align-items:center;justify-content:center;
-  font-size:1.6rem;margin-bottom:6px;}
+.modal-similar-img{height:56px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:6px;}
 .modal-similar-img img{width:100%;height:100%;object-fit:contain;}
 .modal-similar-name{font-size:0.7rem;font-weight:600;color:var(--dark);line-height:1.2;
   margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .modal-similar-price{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--blue);font-weight:700;}
 
-/* CART */
 .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;
   opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .cart-overlay.open{opacity:1;pointer-events:all;}
@@ -252,9 +304,32 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
   box-shadow:0 4px 20px rgba(0,0,0,0.2);}
 .toast.show{transform:translateX(-50%) translateY(0);}
 
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:40px 48px;margin-top:40px;}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-bottom:32px;}
+.footer-brand .logo{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;display:block;margin-bottom:8px;}
+.footer-brand p{font-size:0.84rem;color:var(--muted);line-height:1.6;}
+.footer-section h4{font-size:0.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--muted);margin-bottom:12px;}
+.footer-section p, .footer-section a{font-size:0.84rem;color:var(--muted);
+  line-height:1.8;text-decoration:none;display:block;}
+.footer-section a:hover{color:var(--blue);}
+.footer-divider{border:none;border-top:1px solid var(--border);margin-bottom:20px;}
+.footer-disclaimer{font-size:0.76rem;color:var(--muted);line-height:1.7;}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;
+  padding-top:16px;border-top:1px solid var(--border);margin-top:16px;}
+.footer-bottom p{font-size:0.78rem;color:var(--muted);}
+
 @media(max-width:900px){
   nav{padding:0 14px;}
   .hero{padding:40px 16px;}
+  .featured-section{padding:24px 16px;}
+  .featured-top{grid-template-columns:1fr;}
+  .featured-card{flex-direction:column;}
+  .featured-card-img{width:100%;height:180px;}
+  .featured-banner{height:auto;}
+  .banner-slide{flex-direction:column;padding:16px;}
+  .banner-slide-img{width:100%;height:140px;}
   .cat-bar{padding:10px 14px;}
   .sidebar{display:none;}
   .products-area{padding:12px;}
@@ -262,6 +337,9 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
   .hero-stats{gap:16px;}
   .modal-top{flex-direction:column;}
   .modal-img-wrap{width:100%;height:200px;border-right:none;border-bottom:1px solid var(--border);}
+  footer{padding:32px 16px;}
+  .footer-grid{grid-template-columns:1fr;}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center;}
 }
 </style>
 </head>
@@ -288,6 +366,20 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
     <div><div class="hero-stat-val" id="heroCount">—</div><div class="hero-stat-lbl">Products live</div></div>
     <div><div class="hero-stat-val">🌍</div><div class="hero-stat-lbl">Global sourcing</div></div>
     <div><div class="hero-stat-val">$0</div><div class="hero-stat-lbl">Hidden fees</div></div>
+  </div>
+</div>
+
+<!-- FEATURED SECTION -->
+<div class="featured-section hidden" id="featuredSection">
+  <div class="featured-title">⭐ Top Featured</div>
+  <!-- 2 SIDE BY SIDE -->
+  <div class="featured-top" id="featuredTop"></div>
+  <!-- ROTATING BANNER -->
+  <div class="featured-banner" id="featuredBanner" style="display:none;">
+    <button class="banner-arrow left" onclick="bannerNav(-1)">‹</button>
+    <div class="banner-slides" id="bannerSlides"></div>
+    <button class="banner-arrow right" onclick="bannerNav(1)">›</button>
+    <div class="banner-dots" id="bannerDots"></div>
   </div>
 </div>
 
@@ -325,6 +417,34 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
   </div>
 </div>
 
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="logo"><span class="w">Wibi</span><span class="l">low</span></span>
+      <p>One store for products from every corner of the world. Curated, priced right, shipped to your door.</p>
+    </div>
+    <div class="footer-section">
+      <h4>Contact</h4>
+      <a href="mailto:support@wibilow.com">support@wibilow.com</a>
+      <p style="margin-top:8px;font-size:0.8rem;">We typically respond within 24 hours.</p>
+    </div>
+    <div class="footer-section">
+      <h4>Information</h4>
+      <a href="#">How it works</a>
+      <a href="#">Shipping info</a>
+      <a href="#">Refund policy</a>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-disclaimer">
+    <strong>Disclaimer:</strong> Wibilow is a dropshipping marketplace. Products are sourced globally and shipped directly from suppliers. Shipping times vary by supplier and destination, typically 7–21 business days. We are not the manufacturer of any products listed. Product availability and prices are subject to change. <strong>Important:</strong> Some products may be designed for non-US electrical standards (220V/240V or non-US plug types). Please verify product specifications before purchasing if you are in the US or Canada, which use 110–120V / Type A/B outlets. Wibilow is not responsible for compatibility issues with local electrical standards. All payments are securely processed via Stripe. We do not store your payment information.
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Wibilow. All rights reserved.</p>
+    <p style="font-size:0.76rem;color:var(--muted);">Secure checkout powered by Stripe · Global sourcing via AliExpress</p>
+  </div>
+</footer>
+
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-card" id="modalCard"></div>
 </div>
@@ -349,7 +469,90 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
 const PAGE_SIZE=50;
 let products=[],cart=[],activeCat='All',searchQ='';
 let currentPage=0,totalProducts=0,loading=false;
+let featuredProducts=[];
+let bannerIndex=0,bannerTimer=null;
 
+// ── FEATURED ──
+async function loadFeatured(){
+  try{
+    const res=await fetch('/api/featured');
+    const data=await res.json();
+    if(!data||!data.length) return;
+    featuredProducts=data;
+    renderFeatured();
+  }catch(e){}
+}
+
+function renderFeatured(){
+  if(!featuredProducts.length) return;
+  document.getElementById('featuredSection').classList.remove('hidden');
+
+  // Top 2 side by side
+  const top=featuredProducts.slice(0,2);
+  document.getElementById('featuredTop').innerHTML=top.map(p=>`
+    <div class="featured-card" onclick="openModal(featuredProducts.find(x=>x.id==='${p.id}'))">
+      <div class="featured-card-img">
+        ${p.thumbnail?`<img src="${p.thumbnail}" alt="${p.name}">`:`<span>${p.icon||'🛍️'}</span>`}
+      </div>
+      <div class="featured-card-body">
+        <div class="featured-card-cat">${p.cat}</div>
+        <div class="featured-card-name">${p.name}</div>
+        <div class="featured-card-price">$${p.price}</div>
+        <button class="featured-card-btn" onclick="event.stopPropagation();addToCart('${p.id}_feat',${JSON.stringify(p).replace(/'/g,'&#39;')})">🛒 Add to Cart</button>
+      </div>
+    </div>`).join('');
+
+  // Rotating banner — all featured products
+  const banner=document.getElementById('featuredBanner');
+  const slides=document.getElementById('bannerSlides');
+  const dots=document.getElementById('bannerDots');
+  if(featuredProducts.length<1){banner.style.display='none';return;}
+  banner.style.display='block';
+  slides.innerHTML=featuredProducts.map(p=>`
+    <div class="banner-slide" onclick="openModal(featuredProducts.find(x=>x.id==='${p.id}'))">
+      <div class="banner-slide-img">
+        ${p.thumbnail?`<img src="${p.thumbnail}" alt="${p.name}">`:`<span>${p.icon||'🛍️'}</span>`}
+      </div>
+      <div class="banner-slide-info">
+        <div class="banner-badge">Featured Pick</div>
+        <div class="banner-name">${p.name}</div>
+        <div class="banner-price">$${p.price}</div>
+        <button class="banner-btn" onclick="event.stopPropagation();addToCart('${p.id}_banner',${JSON.stringify(p).replace(/'/g,'&#39;')})">🛒 Add to Cart</button>
+      </div>
+    </div>`).join('');
+  dots.innerHTML=featuredProducts.map((_,i)=>`<div class="banner-dot ${i===0?'active':''}" onclick="goToBanner(${i})"></div>`).join('');
+  startBannerTimer();
+}
+
+function startBannerTimer(){
+  if(bannerTimer) clearInterval(bannerTimer);
+  bannerTimer=setInterval(()=>bannerNav(1),4000);
+}
+
+function bannerNav(delta){
+  bannerIndex=(bannerIndex+delta+featuredProducts.length)%featuredProducts.length;
+  updateBanner();
+  startBannerTimer();
+}
+
+function goToBanner(i){
+  bannerIndex=i;updateBanner();startBannerTimer();
+}
+
+function updateBanner(){
+  const slides=document.getElementById('bannerSlides');
+  if(slides) slides.style.transform=`translateX(-${bannerIndex*100}%)`;
+  document.querySelectorAll('.banner-dot').forEach((d,i)=>d.classList.toggle('active',i===bannerIndex));
+}
+
+function addToCart(tempId, p){
+  const existing=cart.findIndex(c=>c.id===p.id);
+  if(existing>-1){cart[existing].qty++;showToast('Quantity updated');}
+  else{cart.push({...p,qty:1});showToast('✓ Added to cart');}
+  renderCart();updateCount();
+}
+
+// ── PRODUCTS ──
 async function fetchProducts(reset=false){
   if(loading) return;
   loading=true;
@@ -379,9 +582,7 @@ async function fetchProducts(reset=false){
     if(products.length<totalProducts){
       wrap.style.display='block';
       if(btn){btn.disabled=false;btn.textContent='Load more products';}
-    }else{
-      wrap.style.display='none';
-    }
+    }else{wrap.style.display='none';}
   }catch(e){console.error(e);}
   loading=false;
 }
@@ -391,15 +592,8 @@ async function loadMore(){
   await fetchProducts(false);
 }
 
-function getCats(){
-  const cats=new Set(products.map(p=>p.cat));
-  return['All',...cats];
-}
-
-function stars(r){
-  r=parseFloat(r)||4.5;
-  return'★'.repeat(Math.floor(r))+(r%1>=0.5?'½':'')+' '+r;
-}
+function getCats(){return['All',...new Set(products.map(p=>p.cat))];}
+function stars(r){r=parseFloat(r)||4.5;return'★'.repeat(Math.floor(r))+(r%1>=0.5?'½':'')+' '+r;}
 
 function renderCats(){
   const bar=document.getElementById('catBar');
@@ -420,8 +614,7 @@ function renderCats(){
   });
 }
 
-function getCartItem(id){return cart.find(c=>c.id===id);}
-function getCartQty(id){const i=getCartItem(id);return i?i.qty:0;}
+function getCartQty(id){const i=cart.find(c=>c.id===id);return i?i.qty:0;}
 
 function appendProducts(newItems){
   const grid=document.getElementById('productGrid');
@@ -447,7 +640,7 @@ function appendProducts(newItems){
             <button class="qty-btn-card" onclick="event.stopPropagation();cardQty('${p.id}',1)">+</button>
           </div>
           <button class="add-btn ${qty>0?'added':''}" id="addbtn-${p.id}"
-            onclick="event.stopPropagation();addToCart('${p.id}')">
+            onclick="event.stopPropagation();addToCartById('${p.id}')">
             ${qty>0?'✓ Added':'+ Add'}
           </button>
         </div>
@@ -457,15 +650,12 @@ function appendProducts(newItems){
   });
 }
 
-function addToCart(id){
+function addToCartById(id){
   const p=products.find(x=>x.id===id);
   if(!p) return;
   const idx=cart.findIndex(c=>c.id===id);
-  if(idx>-1){cart[idx].qty++;}
-  else{cart.push({...p,qty:1});}
-  updateCardUI(id);
-  renderCart();updateCount();
-  showToast('✓ Added to cart');
+  if(idx>-1){cart[idx].qty++;}else{cart.push({...p,qty:1});}
+  updateCardUI(id);renderCart();updateCount();showToast('✓ Added to cart');
 }
 
 function cardQty(id,delta){
@@ -473,8 +663,7 @@ function cardQty(id,delta){
   if(idx===-1) return;
   cart[idx].qty+=delta;
   if(cart[idx].qty<=0) cart.splice(idx,1);
-  updateCardUI(id);
-  renderCart();updateCount();
+  updateCardUI(id);renderCart();updateCount();
 }
 
 function updateCardUI(id){
@@ -482,33 +671,26 @@ function updateCardUI(id){
   const ctrl=document.getElementById('qtyctrl-'+id);
   const num=document.getElementById('qtynum-'+id);
   const btn=document.getElementById('addbtn-'+id);
-  if(ctrl){ctrl.classList.toggle('visible',qty>0);}
-  if(num){num.textContent=qty;}
-  if(btn){
-    btn.className='add-btn'+(qty>0?' added':'');
-    btn.textContent=qty>0?'✓ Added':'+ Add';
-  }
+  if(ctrl) ctrl.classList.toggle('visible',qty>0);
+  if(num) num.textContent=qty;
+  if(btn){btn.className='add-btn'+(qty>0?' added':'');btn.textContent=qty>0?'✓ Added':'+ Add';}
 }
 
-function toggleCart(p){
-  addToCart(p.id);
-}
+function toggleCart(p){addToCartById(p.id);}
 
 function changeQty(idx,delta){
   if(!cart[idx]) return;
   const id=cart[idx].id;
   cart[idx].qty+=delta;
   if(cart[idx].qty<=0) cart.splice(idx,1);
-  updateCardUI(id);
-  renderCart();updateCount();
+  updateCardUI(id);renderCart();updateCount();
 }
 
 function removeFromCart(idx){
   if(!cart[idx]) return;
   const id=cart[idx].id;
   cart.splice(idx,1);
-  updateCardUI(id);
-  renderCart();updateCount();
+  updateCardUI(id);renderCart();updateCount();
 }
 
 function renderCart(){
@@ -541,10 +723,7 @@ function renderCart(){
   document.getElementById('totalEl').textContent='$'+sub.toFixed(2);
 }
 
-function updateCount(){
-  document.getElementById('cartCount').textContent=cart.reduce((s,p)=>s+p.qty,0);
-}
-
+function updateCount(){document.getElementById('cartCount').textContent=cart.reduce((s,p)=>s+p.qty,0);}
 function openCart(){document.getElementById('cartDrawer').classList.add('open');document.getElementById('cartOverlay').classList.add('open');renderCart();}
 function closeCart(){document.getElementById('cartDrawer').classList.remove('open');document.getElementById('cartOverlay').classList.remove('open');}
 document.getElementById('cartBtn').onclick=openCart;
@@ -558,6 +737,7 @@ function showToast(msg){
 }
 
 function openModal(p){
+  if(!p) return;
   const overlay=document.getElementById('modalOverlay');
   const card=document.getElementById('modalCard');
   const inCart=cart.some(c=>c.id===p.id);
@@ -579,20 +759,20 @@ function openModal(p){
         </div>
         <div class="modal-price">$${p.price}</div>
         <div class="modal-shipping">Free shipping on orders $35+ · Stripe secured</div>
-        <div class="modal-desc">${p.desc||'A great pick from our global catalog. Ships directly to your door.'}</div>
+        <div class="modal-desc">${p.desc||'A great pick from our global catalog.'}</div>
         <div class="modal-badges">
           <div class="modal-badge"><div class="modal-badge-icon">📦</div><div class="modal-badge-label">Direct ship</div><div class="modal-badge-sub">To your door</div></div>
           <div class="modal-badge"><div class="modal-badge-icon">🔒</div><div class="modal-badge-label">Secure pay</div><div class="modal-badge-sub">Stripe</div></div>
-          <div class="modal-badge"><div class="modal-badge-icon">🌍</div><div class="modal-badge-label">Global</div><div class="modal-badge-sub">Sourced worldwide</div></div>
+          <div class="modal-badge"><div class="modal-badge-icon">🌍</div><div class="modal-badge-label">Global</div><div class="modal-badge-sub">Worldwide</div></div>
         </div>
         ${p.stock&&p.stock<10?`<div class="modal-stock-warn">⚠️ Only ${p.stock} left in stock</div>`:''}
         <div class="modal-actions">
           <button class="modal-add-btn ${inCart?'added':''}"
-            onclick="addToCart('${p.id}');openModal(products.find(x=>x.id==='${p.id}'))">
+            onclick="addToCartById('${p.id}');openModal(products.find(x=>x.id==='${p.id}')||featuredProducts.find(x=>x.id==='${p.id}'))">
             ${inCart?`✓ In Cart (${cartItem.qty}) — Add More`:'🛒 Add to Cart'}
           </button>
           <button class="modal-buy-btn"
-            onclick="addToCart('${p.id}');closeModal();openCart();">
+            onclick="addToCartById('${p.id}');closeModal();openCart();">
             Buy now →
           </button>
         </div>
@@ -641,6 +821,7 @@ document.getElementById('priceMin').addEventListener('input',()=>fetchProducts(t
 document.getElementById('priceMax').addEventListener('input',()=>fetchProducts(true));
 document.getElementById('sortSelect').addEventListener('change',()=>fetchProducts(true));
 
+loadFeatured();
 fetchProducts(true);
 </script>
 </body>
