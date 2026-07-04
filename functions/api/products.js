@@ -14,7 +14,13 @@ export async function onRequest(context){
   const params = [minPrice, maxPrice];
 
   if(cat){ where += ' AND cat = ?'; params.push(cat); }
-  if(q){ where += ' AND name LIKE ?'; params.push('%'+q+'%'); }
+  if(q){
+  const words = q.trim().split(/\s+/);
+  for(const word of words){
+    where += ' AND name LIKE ?';
+    params.push('%'+word+'%');
+  }
+}
   let orderBy = 'ORDER BY reviews DESC';
   if(sort==='priceLow') orderBy='ORDER BY price ASC';
   else if(sort==='priceHigh') orderBy='ORDER BY price DESC';
