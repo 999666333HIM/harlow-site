@@ -302,7 +302,7 @@ textarea.form-input{resize:vertical;min-height:68px;}
     <div class="tab" onclick="switchTab('analytics')">📊 Analytics</div>
     <div class="tab" onclick="switchTab('add')">➕ Add Product</div>
     <div class="tab" onclick="switchTab('catalog')">📦 Catalog</div>
-<div class="tab" onclick="switchTab('featured')">⭐ Featured</div>
+    <div class="tab" onclick="switchTab('featured')">⭐ Featured</div>
   </div>
 
   <!-- ORDERS -->
@@ -485,6 +485,22 @@ textarea.form-input{resize:vertical;min-height:68px;}
     </div>
   </div>
 </div>
+
+<!-- FEATURED -->
+  <div class="tab-content" id="tab-featured">
+    <div class="form-card" style="max-width:700px;">
+      <h3>⭐ Manage Featured Products</h3>
+      <p style="color:var(--muted);font-size:0.84rem;margin-bottom:20px;">Search and pick products to feature on the storefront. First 2 show as big cards, all featured products rotate in the banner below them.</p>
+      <div class="url-fetch-row" style="margin-bottom:16px;">
+        <input type="text" class="url-input" id="featuredSearch" placeholder="Search products to feature…" oninput="searchFeatured()">
+      </div>
+      <div id="featuredSearchResults" style="margin-bottom:20px;max-height:300px;overflow-y:auto;"></div>
+      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">Currently Featured (<span id="featuredCount">0</span>)</div>
+      <div id="featuredList"></div>
+      <button class="add-btn-main" onclick="saveFeatured()" style="margin-top:16px;">Save Featured Products →</button>
+      <div class="success-msg" id="featuredSuccess">✓ Featured products saved!</div>
+    </div>
+  </div>
 
 <!-- CATALOG PRODUCT MODAL -->
 <div class="cat-modal-overlay" id="catModalOverlay">
@@ -815,11 +831,11 @@ async function loadImports(){
     while(true){
       const res=await fetch('/api/products?limit=500&page='+page);
       const data=await res.json();
-      const manual=(data.products||[]).filter(p=>p.manual==1||p.manual===true);
+      const manual=(data.products||[]).filter(p=>p.manual);
       allImports=[...allImports,...manual];
-      if((data.products||[]).length<500) break;
+      if(allImports.length>=data.total||!data.products?.length||(data.products||[]).filter(p=>p.manual).length===0&&page>0) break;
       page++;
-      if(page>20) break;
+      if(page>10) break;
     }
     if(!allImports.length){
       container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No imported or manual products found.</div>';
@@ -830,13 +846,14 @@ async function loadImports(){
         ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
         <div class="import-info">
           <div class="import-name" title="${p.name}">${p.name}</div>
-          <div class="import-meta">${p.cat} · $${p.price}${p.source_url?` · <a href="${p.source_url}" target="_blank" style="color:var(--blue);">Source ↗</a>`:''}</div>
+          <div class="import-meta">${p.cat} · Stock: ${p.stock}${p.source_url?` · <a href="${p.source_url}" target="_blank" style="color:var(--blue);">Source ↗</a>`:''}</div>
         </div>
-        <button class="import-edit" onclick='editImport(${JSON.stringify(p)})'>Edit</button>
+        <div class="import-price">$${p.price}</div>
+        <button class="import-edit" onclick="editImport(${JSON.stringify(p).replace(/"/g,'&quot;')})">Edit</button>
         <button class="import-delete" onclick="deleteImport('${p.id}',this)">Remove</button>
       </div>`).join('');
   }catch(e){
-    container.innerHTML='<div style="color:var(--red);font-size:0.84rem;">Error: '+e.message+'</div>';
+    container.innerHTML='<div style="color:var(--red);font-size:0.84rem;">Failed to load imports.</div>';
   }
 }
 
@@ -875,7 +892,7 @@ async function loadCatalog(){
     document.getElementById('catalogLoading').style.display='block';
     document.getElementById('catalogWrap').style.display='none';
     while(true){
-      const res=await fetch('/api/products?limit=500&page='+page+'&manual=1');
+      const res=await fetch('/api/products?limit=500&page='+page);
       const data=await res.json();
       total=data.total||0;
       allProds=[...allProds,...(data.products||[])];
@@ -994,21 +1011,6 @@ function renderCatModal(){
       <span class="cat-modal-tag">Est. profit: ${profit>0?'+':''}$${profit}</span>
       <span class="cat-modal-tag">${p.manual?'Manual':p.source_url?.includes('aliexpress')?'AliExpress':'External'}</span>
       ${p.hot?'<span class="cat-modal-tag" style="color:var(--blue);">🔥 HOT</span>':''}
-<!-- FEATURED -->
-<div class="tab-content" id="tab-featured">
-  <div class="form-card" style="max-width:700px;">
-    <h3>⭐ Manage Featured Products</h3>
-    <p style="color:var(--muted);font-size:0.84rem;margin-bottom:20px;">Search and pick products to feature on the storefront. First 2 show as big cards, all featured products rotate in the banner below them.</p>
-    <div class="url-fetch-row" style="margin-bottom:16px;">
-      <input type="text" class="url-input" id="featuredSearch" placeholder="Search products to feature…" oninput="searchFeatured()">
-    </div>
-    <div id="featuredSearchResults" style="margin-bottom:20px;max-height:300px;overflow-y:auto;"></div>
-    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">Currently Featured (<span id="featuredCount">0</span>)</div>
-    <div id="featuredList"></div>
-    <button class="add-btn-main" onclick="saveFeatured()" style="margin-top:16px;">Save Featured Products →</button>
-    <div class="success-msg" id="featuredSuccess">✓ Featured products saved!</div>
-  </div>
-</div>
     </div>
     ${p.source_url?`<a href="${p.source_url}" target="_blank" class="cat-modal-link">View source ↗</a>`:''}
     ${p.manual?`<button onclick="editImport(${JSON.stringify(p).replace(/"/g,'&quot;')});closeCatModal();switchTab('add')" style="padding:8px 16px;background:var(--blue);color:#fff;border:none;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:600;margin-top:4px;">Edit this product →</button>`:''}`;
@@ -1020,6 +1022,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight') navigateCatModal(1);
   if(e.key==='Escape') closeCatModal();
 });
+
 // ── FEATURED ──
 let featuredIds=[];
 let featuredProductObjs=[];
@@ -1028,15 +1031,17 @@ async function loadFeaturedAdmin(){
   try{
     const res=await fetch('/api/featured');
     const data=await res.json();
-    featuredProductObjs=data||[];
+    featuredProductObjs=Array.isArray(data)?data:[];
     featuredIds=featuredProductObjs.map(p=>p.id);
     renderFeaturedList();
-  }catch(e){}
+  }catch(e){featuredProductObjs=[];featuredIds=[];renderFeaturedList();}
 }
 
 function renderFeaturedList(){
-  document.getElementById('featuredCount').textContent=featuredIds.length;
+  const countEl=document.getElementById('featuredCount');
+  if(countEl) countEl.textContent=featuredIds.length;
   const container=document.getElementById('featuredList');
+  if(!container) return;
   if(!featuredProductObjs.length){
     container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No featured products yet. Search above to add some.</div>';
     return;
@@ -1057,29 +1062,34 @@ function searchFeatured(){
   clearTimeout(featuredSearchTimer);
   featuredSearchTimer=setTimeout(async()=>{
     const q=document.getElementById('featuredSearch').value.trim();
-    if(!q){document.getElementById('featuredSearchResults').innerHTML='';return;}
-    const res=await fetch('/api/products?q='+encodeURIComponent(q)+'&limit=10&page=0');
-    const data=await res.json();
     const container=document.getElementById('featuredSearchResults');
-    if(!data.products?.length){container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No products found.</div>';return;}
-    container.innerHTML=data.products.map(p=>`
-      <div class="import-row" style="margin-bottom:6px;">
-        ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
-        <div class="import-info">
-          <div class="import-name">${p.name}</div>
-          <div class="import-meta">${p.cat} · $${p.price}</div>
-        </div>
-        <button class="import-edit" onclick="addFeatured(${JSON.stringify(p).replace(/"/g,'&quot;')})"
-          ${featuredIds.includes(p.id)?'disabled style="opacity:0.4"':''}>
-          ${featuredIds.includes(p.id)?'Added ✓':'+ Feature'}
-        </button>
-      </div>`).join('');
+    if(!q){container.innerHTML='';return;}
+    try{
+      const res=await fetch('/api/products?q='+encodeURIComponent(q)+'&limit=10&page=0');
+      const data=await res.json();
+      if(!data.products?.length){container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No products found.</div>';return;}
+      container.innerHTML=data.products.map(p=>{
+        const already=featuredIds.includes(p.id);
+        return `
+        <div class="import-row" style="margin-bottom:6px;">
+          ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
+          <div class="import-info">
+            <div class="import-name">${p.name}</div>
+            <div class="import-meta">${p.cat} · $${p.price}</div>
+          </div>
+          <button class="import-edit" data-pid="${p.id}" onclick="addFeaturedById('${p.id}')" ${already?'disabled style="opacity:0.4"':''}>${already?'Added ✓':'+ Feature'}</button>
+        </div>`;
+      }).join('');
+      // Store search results for addFeaturedById
+      window.__searchResults=data.products;
+    }catch(e){container.innerHTML='<div style="color:var(--red);font-size:0.84rem;">Search failed.</div>';}
   },400);
 }
 
-function addFeatured(p){
-  if(featuredIds.includes(p.id)) return;
-  featuredIds.push(p.id);
+function addFeaturedById(id){
+  const p=(window.__searchResults||[]).find(x=>x.id===id);
+  if(!p||featuredIds.includes(id)) return;
+  featuredIds.push(id);
   featuredProductObjs.push(p);
   renderFeaturedList();
   searchFeatured();
@@ -1094,11 +1104,13 @@ function removeFeatured(id){
 
 async function saveFeatured(){
   try{
-    await fetch('/api/featured',{method:'POST',
+    const res=await fetch('/api/featured',{method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ids:featuredIds})});
-    document.getElementById('featuredSuccess').style.display='block';
-    setTimeout(()=>document.getElementById('featuredSuccess').style.display='none',3000);
+    if(!res.ok) throw new Error('Save failed');
+    const msg=document.getElementById('featuredSuccess');
+    msg.style.display='block';
+    setTimeout(()=>msg.style.display='none',3000);
   }catch(e){alert('Failed to save featured products.');}
 }
 </script>
