@@ -498,7 +498,7 @@ function renderFeatured(){
         <div class="featured-card-cat">${p.cat}</div>
         <div class="featured-card-name">${p.name}</div>
         <div class="featured-card-price">$${p.price}</div>
-        <button class="featured-card-btn" onclick="event.stopPropagation();addToCart('${p.id}_feat',${JSON.stringify(p).replace(/'/g,'&#39;')})">🛒 Add to Cart</button>
+       <button class="featured-card-btn" onclick="event.stopPropagation();addFeaturedToCart('${p.id}')">🛒 Add to Cart</button>
       </div>
     </div>`).join('');
 
@@ -517,7 +517,7 @@ function renderFeatured(){
         <div class="banner-badge">Featured Pick</div>
         <div class="banner-name">${p.name}</div>
         <div class="banner-price">$${p.price}</div>
-        <button class="banner-btn" onclick="event.stopPropagation();addToCart('${p.id}_banner',${JSON.stringify(p).replace(/'/g,'&#39;')})">🛒 Add to Cart</button>
+        <button class="banner-btn" onclick="event.stopPropagation();addFeaturedToCart('${p.id}')">🛒 Add to Cart</button>
       </div>
     </div>`).join('');
   dots.innerHTML=featuredProducts.map((_,i)=>`<div class="banner-dot ${i===0?'active':''}" onclick="goToBanner(${i})"></div>`).join('');
@@ -545,9 +545,11 @@ function updateBanner(){
   document.querySelectorAll('.banner-dot').forEach((d,i)=>d.classList.toggle('active',i===bannerIndex));
 }
 
-function addToCart(tempId, p){
-  const existing=cart.findIndex(c=>c.id===p.id);
-  if(existing>-1){cart[existing].qty++;showToast('Quantity updated');}
+function addFeaturedToCart(id){
+  const p=featuredProducts.find(x=>x.id===id);
+  if(!p) return;
+  const idx=cart.findIndex(c=>c.id===id);
+  if(idx>-1){cart[idx].qty++;showToast('Quantity updated');}
   else{cart.push({...p,qty:1});showToast('✓ Added to cart');}
   renderCart();updateCount();
 }
