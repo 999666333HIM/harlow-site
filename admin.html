@@ -1046,8 +1046,11 @@ function renderFeaturedList(){
     container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No featured products yet. Search above to add some.</div>';
     return;
   }
-  container.innerHTML=featuredProductObjs.map((p,i)=>`
-    <div class="import-row" style="margin-bottom:8px;">
+  container.innerHTML='<div style="font-size:0.72rem;color:var(--muted);margin-bottom:8px;">Drag to reorder · First 2 show as big cards, rest go in carousel</div>'+
+  featuredProductObjs.map((p,i)=>`
+    <div class="import-row" style="margin-bottom:8px;cursor:grab;" draggable="true"
+      ondragstart="dragStart(event,${i})" ondragover="dragOver(event)" ondrop="dragDrop(event,${i})" ondragend="dragEnd(event)">
+      <div style="color:var(--muted);font-size:1rem;cursor:grab;padding:0 4px;flex-shrink:0;">⠿</div>
       ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
       <div class="import-info">
         <div class="import-name">${p.name}</div>
@@ -1055,6 +1058,22 @@ function renderFeaturedList(){
       </div>
       <button class="import-delete" onclick="removeFeatured('${p.id}')">Remove</button>
     </div>`).join('');
+}
+
+let dragSrcIdx=null;
+function dragStart(e,i){dragSrcIdx=i;e.currentTarget.style.opacity='0.4';}
+function dragEnd(e){e.currentTarget.style.opacity='1';}
+function dragOver(e){e.preventDefault();}
+function dragDrop(e,i){
+  e.preventDefault();
+  if(dragSrcIdx===null||dragSrcIdx===i) return;
+  const items=[...featuredProductObjs];
+  const [moved]=items.splice(dragSrcIdx,1);
+  items.splice(i,0,moved);
+  featuredProductObjs=items;
+  featuredIds=items.map(p=>p.id);
+  dragSrcIdx=null;
+  renderFeaturedList();
 }
 
 let featuredSearchTimer;

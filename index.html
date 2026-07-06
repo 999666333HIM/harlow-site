@@ -58,63 +58,77 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
 .hero-stat-val{font-family:'JetBrains Mono',monospace;font-size:1.5rem;color:var(--blue);font-weight:700;}
 .hero-stat-lbl{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
 
-/* FEATURED SECTION */
-.featured-section{padding:40px 48px;background:var(--white);border-bottom:1px solid var(--border);}
+/* FEATURED */
+.featured-section{padding:32px 48px;background:var(--white);border-bottom:1px solid var(--border);}
 .featured-section.hidden{display:none;}
 .featured-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;
-  color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+  color:var(--muted);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
 .featured-title::after{content:'';flex:1;height:1px;background:var(--border);}
 
-/* 2 TOP FEATURED CARDS */
+/* TOP 2 ROTATING BIG CARDS */
 .featured-top{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
 .featured-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;
-  overflow:hidden;cursor:pointer;transition:all 0.2s;display:flex;}
-.featured-card:hover{border-color:var(--blue);box-shadow:0 8px 32px rgba(37,99,235,0.12);}
-.featured-card-img{width:200px;flex-shrink:0;background:var(--surface2);
-  display:flex;align-items:center;justify-content:center;font-size:3rem;}
-.featured-card-img img{width:100%;height:100%;object-fit:contain;padding:16px;}
+  overflow:hidden;cursor:pointer;transition:all 0.2s;display:flex;position:relative;}
+.featured-card:hover{border-color:var(--blue);box-shadow:0 8px 32px rgba(37,99,235,0.1);}
+.featured-card-img{width:180px;flex-shrink:0;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;font-size:3rem;padding:16px;}
+.featured-card-img img{width:100%;height:100%;object-fit:contain;max-height:160px;}
 .featured-card-body{padding:20px;flex:1;display:flex;flex-direction:column;justify-content:center;}
 .featured-card-cat{font-size:0.68rem;font-weight:700;text-transform:uppercase;
   letter-spacing:0.1em;color:var(--blue);margin-bottom:6px;}
-.featured-card-name{font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:8px;line-height:1.3;}
-.featured-card-price{font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:var(--blue);
-  font-weight:700;margin-bottom:12px;}
-.featured-card-btn{display:inline-flex;padding:8px 18px;background:var(--blue);color:#fff;
-  border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.84rem;
-  font-weight:600;cursor:pointer;transition:background 0.2s;align-self:flex-start;}
-.featured-card-btn:hover{background:var(--blue2);}
+.featured-card-name{font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:8px;
+  line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.featured-card-price{font-family:'JetBrains Mono',monospace;font-size:1.3rem;color:var(--blue);
+  font-weight:700;margin-bottom:14px;}
+.featured-card-actions{display:flex;align-items:center;gap:8px;}
+.featured-add-btn{padding:8px 16px;background:var(--blue);color:#fff;
+  border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.82rem;
+  font-weight:600;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+.featured-add-btn:hover{background:var(--blue2);}
+.featured-add-btn.added{background:rgba(8,145,178,0.1);color:var(--cyan);border:1.5px solid rgba(8,145,178,0.3);}
+.featured-qty-ctrl{display:none;align-items:center;gap:4px;}
+.featured-qty-ctrl.visible{display:flex;}
+.featured-qty-btn{width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);
+  background:var(--white);cursor:pointer;font-size:0.9rem;color:var(--dark);
+  display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.featured-qty-btn:hover{border-color:var(--blue);color:var(--blue);}
+.featured-qty-num{font-family:'JetBrains Mono',monospace;font-size:0.88rem;font-weight:700;min-width:20px;text-align:center;}
+.featured-card-dots{position:absolute;bottom:10px;right:12px;display:flex;gap:4px;}
+.featured-dot{width:6px;height:6px;border-radius:50%;background:rgba(37,99,235,0.2);cursor:pointer;transition:background 0.2s;}
+.featured-dot.active{background:var(--blue);}
 
-/* ROTATING BANNER */
-.featured-banner{position:relative;border-radius:16px;overflow:hidden;
-  background:var(--surface);border:1.5px solid var(--border);height:220px;cursor:pointer;}
-.featured-banner:hover{border-color:var(--blue);}
-.banner-slides{display:flex;transition:transform 0.5s ease;height:100%;}
-.banner-slide{min-width:100%;display:flex;align-items:center;padding:24px 32px;gap:28px;}
-.banner-slide-img{width:180px;height:170px;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;font-size:4rem;background:var(--surface2);border-radius:12px;}
-.banner-slide-img img{width:100%;height:100%;object-fit:contain;padding:12px;}
-.banner-slide-info{flex:1;}
-.banner-badge{display:inline-block;background:rgba(37,99,235,0.1);color:var(--blue);
-  border:1px solid rgba(37,99,235,0.2);border-radius:999px;padding:4px 12px;
-  font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;}
-.banner-name{font-size:1.3rem;font-weight:700;color:var(--dark);margin-bottom:8px;line-height:1.2;}
-.banner-price{font-family:'JetBrains Mono',monospace;font-size:1.8rem;color:var(--blue);
-  font-weight:700;margin-bottom:16px;}
-.banner-btn{padding:10px 22px;background:var(--blue);color:#fff;border:none;
-  border-radius:8px;font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;
-  cursor:pointer;transition:background 0.2s;}
-.banner-btn:hover{background:var(--blue2);}
-.banner-dots{position:absolute;bottom:12px;right:16px;display:flex;gap:6px;}
-.banner-dot{width:8px;height:8px;border-radius:50%;background:rgba(37,99,235,0.2);
-  cursor:pointer;transition:background 0.2s;}
-.banner-dot.active{background:var(--blue);}
-.banner-arrow{position:absolute;top:50%;transform:translateY(-50%);
-  background:rgba(255,255,255,0.9);border:1px solid var(--border);border-radius:50%;
-  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:1rem;color:var(--dark);transition:all 0.2s;z-index:2;}
+/* CAROUSEL BANNER */
+.featured-banner{position:relative;}
+.banner-viewport{overflow:hidden;border-radius:12px;}
+.banner-track{display:flex;transition:transform 0.4s ease;gap:12px;}
+.banner-item{flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);
+  border-radius:12px;padding:14px;cursor:pointer;transition:all 0.15s;text-align:center;width:calc(25% - 9px);}
+.banner-item:hover{border-color:var(--blue);transform:translateY(-2px);}
+.banner-item-img{height:100px;display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;margin-bottom:10px;background:var(--surface2);border-radius:8px;overflow:hidden;}
+.banner-item-img img{width:100%;height:100%;object-fit:contain;padding:8px;}
+.banner-item-cat{font-size:0.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.08em;color:var(--blue);margin-bottom:4px;}
+.banner-item-name{font-size:0.78rem;font-weight:600;color:var(--dark);margin-bottom:6px;
+  line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  min-height:2.1em;}
+.banner-item-price{font-family:'JetBrains Mono',monospace;font-size:0.95rem;color:var(--blue);
+  font-weight:700;margin-bottom:10px;}
+.banner-item-btn{width:100%;padding:6px;background:rgba(37,99,235,0.08);
+  color:var(--blue);border:1.5px solid rgba(37,99,235,0.2);
+  border-radius:7px;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;
+  cursor:pointer;transition:all 0.15s;}
+.banner-item-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.banner-item-btn.added{background:rgba(8,145,178,0.1);color:var(--cyan);border-color:rgba(8,145,178,0.3);}
+.banner-controls{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;}
+.banner-arrow{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:0.9rem;color:var(--dark);transition:all 0.15s;}
 .banner-arrow:hover{border-color:var(--blue);color:var(--blue);}
-.banner-arrow.left{left:12px;}
-.banner-arrow.right{right:12px;}
+.banner-arrow:disabled{opacity:0.3;cursor:not-allowed;}
+.banner-dots{display:flex;gap:5px;}
+.banner-dot{width:7px;height:7px;border-radius:50%;background:rgba(37,99,235,0.2);cursor:pointer;transition:background 0.2s;}
+.banner-dot.active{background:var(--blue);}
 
 .cat-bar{display:flex;gap:8px;padding:12px 48px;overflow-x:auto;
   border-bottom:1px solid var(--border);background:var(--white);}
@@ -226,8 +240,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
   border-radius:8px;padding:8px 12px;font-size:0.8rem;color:#DC2626;font-weight:600;}
 .modal-actions{display:flex;flex-direction:column;gap:8px;margin-top:auto;}
 .modal-add-btn{padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-size:0.95rem;
-  font-weight:700;cursor:pointer;transition:all 0.2s;border:none;
-  background:var(--blue);color:#fff;}
+  font-weight:700;cursor:pointer;transition:all 0.2s;border:none;background:var(--blue);color:#fff;}
 .modal-add-btn:hover{background:var(--blue2);}
 .modal-add-btn.added{background:rgba(8,145,178,0.1);color:var(--cyan);border:1.5px solid rgba(8,145,178,0.3);}
 .modal-buy-btn{padding:11px;border-radius:10px;font-family:'Inter',sans-serif;
@@ -304,15 +317,13 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);
   box-shadow:0 4px 20px rgba(0,0,0,0.2);}
 .toast.show{transform:translateX(-50%) translateY(0);}
 
-/* FOOTER */
 footer{background:var(--surface);border-top:1px solid var(--border);padding:40px 48px;margin-top:40px;}
 .footer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-bottom:32px;}
 .footer-brand .logo{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;display:block;margin-bottom:8px;}
 .footer-brand p{font-size:0.84rem;color:var(--muted);line-height:1.6;}
 .footer-section h4{font-size:0.72rem;font-weight:700;text-transform:uppercase;
   letter-spacing:0.1em;color:var(--muted);margin-bottom:12px;}
-.footer-section p, .footer-section a{font-size:0.84rem;color:var(--muted);
-  line-height:1.8;text-decoration:none;display:block;}
+.footer-section p,.footer-section a{font-size:0.84rem;color:var(--muted);line-height:1.8;text-decoration:none;display:block;}
 .footer-section a:hover{color:var(--blue);}
 .footer-divider{border:none;border-top:1px solid var(--border);margin-bottom:20px;}
 .footer-disclaimer{font-size:0.76rem;color:var(--muted);line-height:1.7;}
@@ -323,13 +334,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
 @media(max-width:900px){
   nav{padding:0 14px;}
   .hero{padding:40px 16px;}
-  .featured-section{padding:24px 16px;}
+  .featured-section{padding:20px 16px;}
   .featured-top{grid-template-columns:1fr;}
   .featured-card{flex-direction:column;}
-  .featured-card-img{width:100%;height:180px;}
-  .featured-banner{height:auto;}
-  .banner-slide{flex-direction:column;padding:16px;}
-  .banner-slide-img{width:100%;height:140px;}
+  .featured-card-img{width:100%;height:160px;}
+  .banner-item{width:calc(50% - 6px);}
   .cat-bar{padding:10px 14px;}
   .sidebar{display:none;}
   .products-area{padding:12px;}
@@ -369,17 +378,21 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
   </div>
 </div>
 
-<!-- FEATURED SECTION -->
+<!-- FEATURED -->
 <div class="featured-section hidden" id="featuredSection">
   <div class="featured-title">⭐ Top Featured</div>
-  <!-- 2 SIDE BY SIDE -->
+  <!-- TOP 2 ROTATING BIG CARDS -->
   <div class="featured-top" id="featuredTop"></div>
-  <!-- ROTATING BANNER -->
+  <!-- CAROUSEL BANNER -->
   <div class="featured-banner" id="featuredBanner" style="display:none;">
-    <button class="banner-arrow left" onclick="bannerNav(-1)">‹</button>
-    <div class="banner-slides" id="bannerSlides"></div>
-    <button class="banner-arrow right" onclick="bannerNav(1)">›</button>
-    <div class="banner-dots" id="bannerDots"></div>
+    <div class="banner-viewport">
+      <div class="banner-track" id="bannerTrack"></div>
+    </div>
+    <div class="banner-controls">
+      <button class="banner-arrow" id="bannerPrev" onclick="bannerNav(-1)">‹</button>
+      <div class="banner-dots" id="bannerDots"></div>
+      <button class="banner-arrow" id="bannerNext" onclick="bannerNav(1)">›</button>
+    </div>
   </div>
 </div>
 
@@ -470,7 +483,8 @@ const PAGE_SIZE=50;
 let products=[],cart=[],activeCat='All',searchQ='';
 let currentPage=0,totalProducts=0,loading=false;
 let featuredProducts=[];
-let bannerIndex=0,bannerTimer=null;
+let topCardIndex=0,topCardTimer=null;
+let bannerPage=0,ITEMS_PER_PAGE=4;
 
 // ── FEATURED ──
 async function loadFeatured(){
@@ -486,10 +500,20 @@ async function loadFeatured(){
 function renderFeatured(){
   if(!featuredProducts.length) return;
   document.getElementById('featuredSection').classList.remove('hidden');
+  renderTopCards();
+  renderBanner();
+}
 
-  // Top 2 side by side
-  const top=featuredProducts.slice(0,2);
-  document.getElementById('featuredTop').innerHTML=top.map(p=>`
+// TOP 2 ROTATING CARDS
+function renderTopCards(){
+  const top=[
+    featuredProducts[topCardIndex % featuredProducts.length],
+    featuredProducts[(topCardIndex+1) % featuredProducts.length],
+  ].filter(Boolean);
+  const container=document.getElementById('featuredTop');
+  container.innerHTML=top.map((p,slot)=>{
+    const qty=getCartQty(p.id);
+    return `
     <div class="featured-card" onclick="openModal(featuredProducts.find(x=>x.id==='${p.id}'))">
       <div class="featured-card-img">
         ${p.thumbnail?`<img src="${p.thumbnail}" alt="${p.name}">`:`<span>${p.icon||'🛍️'}</span>`}
@@ -498,60 +522,126 @@ function renderFeatured(){
         <div class="featured-card-cat">${p.cat}</div>
         <div class="featured-card-name">${p.name}</div>
         <div class="featured-card-price">$${p.price}</div>
-       <button class="featured-card-btn" onclick="event.stopPropagation();addFeaturedToCart('${p.id}')">🛒 Add to Cart</button>
+        <div class="featured-card-actions">
+          <div class="featured-qty-ctrl ${qty>0?'visible':''}" id="fqtyctrl-${p.id}-${slot}">
+            <button class="featured-qty-btn" onclick="event.stopPropagation();featuredQty('${p.id}',-1)">−</button>
+            <span class="featured-qty-num" id="fqtynum-${p.id}-${slot}">${qty}</span>
+            <button class="featured-qty-btn" onclick="event.stopPropagation();featuredQty('${p.id}',1)">+</button>
+          </div>
+          <button class="featured-add-btn ${qty>0?'added':''}" id="faddbtn-${p.id}-${slot}"
+            onclick="event.stopPropagation();addFeaturedToCart('${p.id}')">
+            ${qty>0?'✓ Added':'🛒 Add to Cart'}
+          </button>
+        </div>
       </div>
-    </div>`).join('');
-
-  // Rotating banner — all featured products
-  const banner=document.getElementById('featuredBanner');
-  const slides=document.getElementById('bannerSlides');
-  const dots=document.getElementById('bannerDots');
-  if(featuredProducts.length<1){banner.style.display='none';return;}
-  banner.style.display='block';
-  slides.innerHTML=featuredProducts.map(p=>`
-    <div class="banner-slide" onclick="openModal(featuredProducts.find(x=>x.id==='${p.id}'))">
-      <div class="banner-slide-img">
-        ${p.thumbnail?`<img src="${p.thumbnail}" alt="${p.name}">`:`<span>${p.icon||'🛍️'}</span>`}
+      <div class="featured-card-dots">
+        ${featuredProducts.map((_,i)=>`<div class="featured-dot ${i===topCardIndex||i===(topCardIndex+1)?'active':''}" onclick="event.stopPropagation();goToTopCard(${i})"></div>`).join('')}
       </div>
-      <div class="banner-slide-info">
-        <div class="banner-badge">Featured Pick</div>
-        <div class="banner-name">${p.name}</div>
-        <div class="banner-price">$${p.price}</div>
-        <button class="banner-btn" onclick="event.stopPropagation();addFeaturedToCart('${p.id}')">🛒 Add to Cart</button>
-      </div>
-    </div>`).join('');
-  dots.innerHTML=featuredProducts.map((_,i)=>`<div class="banner-dot ${i===0?'active':''}" onclick="goToBanner(${i})"></div>`).join('');
-  startBannerTimer();
+    </div>`;
+  }).join('');
+  startTopCardTimer();
 }
 
-function startBannerTimer(){
-  if(bannerTimer) clearInterval(bannerTimer);
-  bannerTimer=setInterval(()=>bannerNav(1),4000);
+function startTopCardTimer(){
+  if(topCardTimer) clearInterval(topCardTimer);
+  topCardTimer=setInterval(()=>{
+    topCardIndex=(topCardIndex+2)%featuredProducts.length;
+    renderTopCards();
+  },10000);
 }
 
-function bannerNav(delta){
-  bannerIndex=(bannerIndex+delta+featuredProducts.length)%featuredProducts.length;
-  updateBanner();
-  startBannerTimer();
-}
-
-function goToBanner(i){
-  bannerIndex=i;updateBanner();startBannerTimer();
-}
-
-function updateBanner(){
-  const slides=document.getElementById('bannerSlides');
-  if(slides) slides.style.transform=`translateX(-${bannerIndex*100}%)`;
-  document.querySelectorAll('.banner-dot').forEach((d,i)=>d.classList.toggle('active',i===bannerIndex));
+function goToTopCard(i){
+  topCardIndex=i;
+  renderTopCards();
 }
 
 function addFeaturedToCart(id){
   const p=featuredProducts.find(x=>x.id===id);
   if(!p) return;
   const idx=cart.findIndex(c=>c.id===id);
-  if(idx>-1){cart[idx].qty++;showToast('Quantity updated');}
-  else{cart.push({...p,qty:1});showToast('✓ Added to cart');}
+  if(idx>-1){cart[idx].qty++;}else{cart.push({...p,qty:1});}
+  updateFeaturedCardUI(id);
+  renderCart();updateCount();showToast('✓ Added to cart');
+}
+
+function featuredQty(id,delta){
+  const idx=cart.findIndex(c=>c.id===id);
+  if(idx===-1) return;
+  cart[idx].qty+=delta;
+  if(cart[idx].qty<=0) cart.splice(idx,1);
+  updateFeaturedCardUI(id);
   renderCart();updateCount();
+}
+
+function updateFeaturedCardUI(id){
+  const qty=getCartQty(id);
+  // Update all slots (slot 0 and slot 1)
+  [0,1].forEach(slot=>{
+    const ctrl=document.getElementById('fqtyctrl-'+id+'-'+slot);
+    const num=document.getElementById('fqtynum-'+id+'-'+slot);
+    const btn=document.getElementById('faddbtn-'+id+'-'+slot);
+    if(ctrl) ctrl.classList.toggle('visible',qty>0);
+    if(num) num.textContent=qty;
+    if(btn){btn.className='featured-add-btn'+(qty>0?' added':'');btn.textContent=qty>0?'✓ Added':'🛒 Add to Cart';}
+  });
+  // Also update banner buttons
+  const bannerBtn=document.getElementById('bbtn-'+id);
+  if(bannerBtn){bannerBtn.className='banner-item-btn'+(qty>0?' added':'');bannerBtn.textContent=qty>0?'✓ Added':'+ Add';}
+}
+
+// CAROUSEL BANNER
+function renderBanner(){
+  const banner=document.getElementById('featuredBanner');
+  if(featuredProducts.length<1){banner.style.display='none';return;}
+  banner.style.display='block';
+  const track=document.getElementById('bannerTrack');
+  track.innerHTML=featuredProducts.map(p=>{
+    const qty=getCartQty(p.id);
+    return `
+    <div class="banner-item" onclick="openModal(featuredProducts.find(x=>x.id==='${p.id}'))">
+      <div class="banner-item-img">
+        ${p.thumbnail?`<img src="${p.thumbnail}" alt="${p.name}">`:`<span>${p.icon||'🛍️'}</span>`}
+      </div>
+      <div class="banner-item-cat">${p.cat}</div>
+      <div class="banner-item-name">${p.name}</div>
+      <div class="banner-item-price">$${p.price}</div>
+      <button class="banner-item-btn ${qty>0?'added':''}" id="bbtn-${p.id}"
+        onclick="event.stopPropagation();addFeaturedToCart('${p.id}')">
+        ${qty>0?'✓ Added':'+ Add'}
+      </button>
+    </div>`;
+  }).join('');
+  // Build dots — one per page of 4
+  const totalPages=Math.ceil(featuredProducts.length/ITEMS_PER_PAGE);
+  const dots=document.getElementById('bannerDots');
+  dots.innerHTML=Array.from({length:totalPages},(_,i)=>`<div class="banner-dot ${i===0?'active':''}" onclick="goToBannerPage(${i})"></div>`).join('');
+  updateBannerPosition();
+}
+
+function bannerNav(delta){
+  const totalPages=Math.ceil(featuredProducts.length/ITEMS_PER_PAGE);
+  bannerPage=Math.max(0,Math.min(totalPages-1,bannerPage+delta));
+  updateBannerPosition();
+}
+
+function goToBannerPage(page){
+  bannerPage=page;
+  updateBannerPosition();
+}
+
+function updateBannerPosition(){
+  const track=document.getElementById('bannerTrack');
+  if(!track) return;
+  // Each item is 25% width minus gap
+  const itemWidth=track.parentElement.offsetWidth/ITEMS_PER_PAGE;
+  const offset=bannerPage*ITEMS_PER_PAGE*(itemWidth+12);
+  track.style.transform=`translateX(-${offset}px)`;
+  const totalPages=Math.ceil(featuredProducts.length/ITEMS_PER_PAGE);
+  document.querySelectorAll('.banner-dot').forEach((d,i)=>d.classList.toggle('active',i===bannerPage));
+  const prev=document.getElementById('bannerPrev');
+  const next=document.getElementById('bannerNext');
+  if(prev) prev.disabled=bannerPage===0;
+  if(next) next.disabled=bannerPage>=totalPages-1;
 }
 
 // ── PRODUCTS ──
@@ -653,7 +743,7 @@ function appendProducts(newItems){
 }
 
 function addToCartById(id){
-  const p=products.find(x=>x.id===id);
+  const p=products.find(x=>x.id===id)||featuredProducts.find(x=>x.id===id);
   if(!p) return;
   const idx=cart.findIndex(c=>c.id===id);
   if(idx>-1){cart[idx].qty++;}else{cart.push({...p,qty:1});}
@@ -678,21 +768,19 @@ function updateCardUI(id){
   if(btn){btn.className='add-btn'+(qty>0?' added':'');btn.textContent=qty>0?'✓ Added':'+ Add';}
 }
 
-function toggleCart(p){addToCartById(p.id);}
-
 function changeQty(idx,delta){
   if(!cart[idx]) return;
   const id=cart[idx].id;
   cart[idx].qty+=delta;
   if(cart[idx].qty<=0) cart.splice(idx,1);
-  updateCardUI(id);renderCart();updateCount();
+  updateCardUI(id);updateFeaturedCardUI(id);renderCart();updateCount();
 }
 
 function removeFromCart(idx){
   if(!cart[idx]) return;
   const id=cart[idx].id;
   cart.splice(idx,1);
-  updateCardUI(id);renderCart();updateCount();
+  updateCardUI(id);updateFeaturedCardUI(id);renderCart();updateCount();
 }
 
 function renderCart(){
@@ -769,12 +857,12 @@ function openModal(p){
         </div>
         ${p.stock&&p.stock<10?`<div class="modal-stock-warn">⚠️ Only ${p.stock} left in stock</div>`:''}
         <div class="modal-actions">
-          <button class="modal-add-btn ${inCart?'added':''}"
-            onclick="addToCartById('${p.id}');openModal(products.find(x=>x.id==='${p.id}')||featuredProducts.find(x=>x.id==='${p.id}'))">
-            ${inCart?`✓ In Cart (${cartItem.qty}) — Add More`:'🛒 Add to Cart'}
+          <button class="modal-add-btn ${inCart?'added':''}" id="modalAddBtn"
+            onclick="modalAddCart('${p.id}')">
+            ${inCart?`✓ In Cart (${cartItem?.qty||1}) — Add More`:'🛒 Add to Cart'}
           </button>
           <button class="modal-buy-btn"
-            onclick="addToCartById('${p.id}');closeModal();openCart();">
+            onclick="modalAddCart('${p.id}');closeModal();openCart();">
             Buy now →
           </button>
         </div>
@@ -793,6 +881,21 @@ function openModal(p){
       </div>
     </div>`:''}`;
   overlay.classList.add('open');
+}
+
+function modalAddCart(id){
+  const p=products.find(x=>x.id===id)||featuredProducts.find(x=>x.id===id);
+  if(!p) return;
+  const idx=cart.findIndex(c=>c.id===id);
+  if(idx>-1){cart[idx].qty++;}else{cart.push({...p,qty:1});}
+  updateCardUI(id);updateFeaturedCardUI(id);renderCart();updateCount();showToast('✓ Added to cart');
+  // Update modal button
+  const btn=document.getElementById('modalAddBtn');
+  if(btn){
+    const qty=getCartQty(id);
+    btn.className='modal-add-btn added';
+    btn.textContent=`✓ In Cart (${qty}) — Add More`;
+  }
 }
 
 function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
