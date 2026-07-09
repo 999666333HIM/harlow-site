@@ -262,6 +262,29 @@ textarea.form-input{resize:vertical;min-height:68px;}
 .arrow-btn:hover{border-color:var(--blue);color:var(--blue);}
 .arrow-btn:disabled{opacity:0.4;cursor:not-allowed;}
 
+
+/* BUYER POPUP */
+.buyer-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:700;
+  display:none;align-items:center;justify-content:center;padding:20px;}
+.buyer-popup-overlay.open{display:flex;}
+.buyer-popup{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:28px;max-width:420px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,0.15);}
+.buyer-popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.buyer-popup-title{font-size:0.95rem;font-weight:700;color:var(--dark);}
+.buyer-popup-close{background:var(--surface2);border:1px solid var(--border);border-radius:7px;
+  width:30px;height:30px;cursor:pointer;font-size:0.85rem;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;}
+.buyer-popup-close:hover{border-color:var(--blue);color:var(--blue);}
+.buyer-field{background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.buyer-field-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;
+  color:var(--muted);margin-bottom:4px;}
+.buyer-field-value{font-size:0.86rem;color:var(--dark);line-height:1.6;word-break:break-word;}
+.buyer-copy-btn{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:5px 12px;font-size:0.72rem;color:var(--muted);cursor:pointer;
+  font-family:'Inter',sans-serif;white-space:nowrap;flex-shrink:0;transition:all 0.15s;}
+.buyer-copy-btn:hover{border-color:var(--blue);color:var(--blue);}
+
 @media(max-width:900px){
   .stats-row{grid-template-columns:repeat(2,1fr);}
   .add-grid{grid-template-columns:1fr;}
@@ -518,6 +541,17 @@ textarea.form-input{resize:vertical;min-height:68px;}
     <div class="success-msg" id="featuredSuccess">✓ Featured products saved!</div>
   </div>
 
+<!-- BUYER POPUP -->
+<div class="buyer-popup-overlay" id="buyerPopupOverlay">
+  <div class="buyer-popup">
+    <div class="buyer-popup-header">
+      <div class="buyer-popup-title">Buyer Details</div>
+      <button class="buyer-popup-close" id="buyerPopupClose">✕</button>
+    </div>
+    <div id="buyerPopupContent"></div>
+  </div>
+</div>
+
 <!-- CATALOG PRODUCT MODAL -->
 <div class="cat-modal-overlay" id="catModalOverlay">
   <div class="cat-modal">
@@ -657,18 +691,23 @@ function renderFulfilled(){
 
 function buildOrderCard(order,isFulfilled,fulfilledTs){
   const addr=order.buyer?.address;
-  const addrLines=[order.buyer?.name,addr?.line1,addr?.line2,
-    `${addr?.city||''}, ${addr?.state||''} ${addr?.zip||''}`,addr?.country].filter(Boolean);
-  const itemsHtml=(order.items||[]).map(item=>`
-    <div class="order-item-row">
-      <div class="order-item-name" title="${item.name}">${item.name} ×${item.quantity||1}</div>
+  const addrStr=[addr?.line1,addr?.line2,`${addr?.city||''}, ${addr?.state||''} ${addr?.zip||''}`,addr?.country].filter(Boolean).join(', ');
+  const buyerName=order.buyer?.name||'Unknown';
+  const buyerEmail=order.buyer?.email||'';
+  const escapedOrder=encodeURIComponent(JSON.stringify({name:buyerName,email:buyerEmail,address:addrStr}));
+
+  const itemsHtml=(order.items||[]).map(item=>{
+    const sourceUrl=item.source_url||item.aliUrl||'';
+    const nameEl=sourceUrl
+      ?`<a href="${sourceUrl}" target="_blank" style="color:var(--blue);text-decoration:none;font-weight:600;font-size:0.83rem;" title="Open source link">${item.name}</a>`
+      :`<span style="font-weight:600;font-size:0.83rem;color:var(--dark);">${item.name}</span>`;
+    return `
+    <div class="order-item-row" style="flex-wrap:wrap;">
+      <div class="order-item-name" style="white-space:normal;overflow:visible;word-break:break-word;max-width:100%;">${nameEl} <span style="color:var(--muted);font-weight:400;">×${item.quantity||1}</span></div>
       <div class="order-item-price">$${item.price}</div>
-    </div>`).join('');
-  const sourceLinks=(order.items||[]).map(item=>{
-    const url=item.source_url||item.aliUrl;
-    if(url) return `<a href="${url}" target="_blank" class="action-btn primary">🛒 Buy to Fulfill ↗</a>`;
-    return '';
-  }).filter(Boolean).join('');
+    </div>`;
+  }).join('');
+
   const fulfilledDateStr=fulfilledTs?new Date(fulfilledTs).toLocaleString():'';
   return `
     <div class="order-card ${isFulfilled?'fulfilled':''}">
@@ -686,19 +725,19 @@ function buildOrderCard(order,isFulfilled,fulfilledTs){
       <div class="order-body">
         <div>
           <div class="order-section-title">Ship to</div>
-          <div class="address-box">
-            <button class="address-copy-btn" onclick="copyAddr('${order.id}',this)">Copy</button>
-            ${addrLines.join('<br>')}
-            ${order.buyer?.email?`<br><span style="color:var(--muted);font-size:0.78rem;">${order.buyer.email}</span>`:''}
+          <div class="address-box" style="cursor:pointer;" onclick="openBuyerPopup('${escapedOrder}')">
+            <div style="font-weight:600;color:var(--dark);margin-bottom:4px;">${buyerName}</div>
+            <div style="font-size:0.82rem;color:var(--dark);line-height:1.6;">${addrStr}</div>
+            ${buyerEmail?`<div style="color:var(--muted);font-size:0.78rem;margin-top:4px;">${buyerEmail}</div>`:''}
+            <div style="font-size:0.68rem;color:var(--blue);margin-top:6px;">Click to copy details</div>
           </div>
         </div>
         <div>
           <div class="order-section-title">Items ordered</div>
-          <div class="order-items-list">${itemsHtml}</div>
+          <div class="order-items-list" style="max-height:200px;overflow-y:auto;">${itemsHtml}</div>
         </div>
       </div>
       <div class="order-actions">
-        ${sourceLinks}
         ${!isFulfilled
           ?`<button class="action-btn success" onclick="markFulfilled('${order.id}')">✓ Mark as Fulfilled</button>`
           :`<button class="action-btn warning" onclick="markPending('${order.id}')">↩ Send back to Orders</button>`}
@@ -706,14 +745,61 @@ function buildOrderCard(order,isFulfilled,fulfilledTs){
     </div>`;
 }
 
-function copyAddr(orderId,btn){
-  const order=allOrders.find(o=>o.id===orderId);
-  if(!order) return;
-  const addr=order.buyer?.address;
-  const text=[order.buyer?.name,addr?.line1,addr?.line2,
-    `${addr?.city}, ${addr?.state} ${addr?.zip}`,addr?.country,order.buyer?.email].filter(Boolean).join('\n');
-  navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});
+function openBuyerPopup(encodedData){
+  const data=JSON.parse(decodeURIComponent(encodedData));
+  const overlay=document.getElementById('buyerPopupOverlay');
+  const content=document.getElementById('buyerPopupContent');
+  content.innerHTML=`
+    <div class="buyer-field">
+      <div>
+        <div class="buyer-field-label">Name</div>
+        <div class="buyer-field-value">${data.name}</div>
+      </div>
+      <button class="buyer-copy-btn" data-copy="${data.name}">Copy</button>
+    </div>
+    <div class="buyer-field">
+      <div>
+        <div class="buyer-field-label">Address</div>
+        <div class="buyer-field-value">${data.address}</div>
+      </div>
+      <button class="buyer-copy-btn" data-copy="${data.address}">Copy</button>
+    </div>
+    ${data.email?`
+    <div class="buyer-field">
+      <div>
+        <div class="buyer-field-label">Email</div>
+        <div class="buyer-field-value">${data.email}</div>
+      </div>
+      <button class="buyer-copy-btn" data-copy="${data.email}">Copy</button>
+    </div>`:''}
+    <div class="buyer-field">
+      <div>
+        <div class="buyer-field-label">All details</div>
+        <div class="buyer-field-value" style="font-size:0.78rem;color:var(--muted);">Name + Address + Email</div>
+      </div>
+      <button class="buyer-copy-btn" data-copy="${data.name}\n${data.address}${data.email?'\n'+data.email:''}">Copy All</button>
+    </div>`;
+  // Attach copy listeners
+  content.querySelectorAll('[data-copy]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      navigator.clipboard.writeText(btn.dataset.copy.replace(/\\n/g,'\n')).then(()=>{
+        btn.textContent='Copied!';
+        setTimeout(()=>btn.textContent=btn.textContent.includes('All')?'Copy All':'Copy',2000);
+      });
+    });
+  });
+  overlay.classList.add('open');
 }
+
+// Close buyer popup
+document.addEventListener('DOMContentLoaded',()=>{
+  const overlay=document.getElementById('buyerPopupOverlay');
+  if(overlay){
+    overlay.addEventListener('click',e=>{if(e.target===overlay) overlay.classList.remove('open');});
+  }
+  const closeBtn=document.getElementById('buyerPopupClose');
+  if(closeBtn) closeBtn.addEventListener('click',()=>document.getElementById('buyerPopupOverlay').classList.remove('open'));
+});
 function markFulfilled(id){
   if(!confirm('Mark this order as fulfilled?')) return;
   const f=JSON.parse(localStorage.getItem('wb2_fulfilled')||'{}');
