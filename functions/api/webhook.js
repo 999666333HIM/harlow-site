@@ -65,7 +65,16 @@ export async function onRequest(context){
     ).run();
 
     // Insert order items
-    for(const item of lineItems){
+for(const item of lineItems){
+      // Look up source_url from products table
+      let sourceUrl='';
+      try{
+        const prod=await env.DB.prepare(
+          'SELECT source_url FROM products WHERE name=? LIMIT 1'
+        ).bind(item.description||'').first();
+        sourceUrl=prod?.source_url||'';
+      }catch(e){}
+
       await env.DB.prepare(`
         INSERT INTO order_items(order_id,product_name,quantity,price,source_url)
         VALUES(?,?,?,?,?)
@@ -74,7 +83,7 @@ export async function onRequest(context){
         item.description||'Unknown',
         item.quantity||1,
         (item.amount_total||0)/100,
-        ''
+        sourceUrl
       ).run();
     }
 
