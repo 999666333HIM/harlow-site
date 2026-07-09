@@ -488,18 +488,34 @@ textarea.form-input{resize:vertical;min-height:68px;}
 
 <!-- FEATURED -->
   <div class="tab-content" id="tab-featured">
-    <div class="form-card" style="max-width:700px;">
-      <h3>⭐ Manage Featured Products</h3>
-      <p style="color:var(--muted);font-size:0.84rem;margin-bottom:20px;">Search and pick products to feature on the storefront. First 2 show as big cards, all featured products rotate in the banner below them.</p>
-      <div class="url-fetch-row" style="margin-bottom:16px;">
-        <input type="text" class="url-input" id="featuredSearch" placeholder="Search products to feature…" oninput="searchFeatured()">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+      <!-- TOP CARDS -->
+      <div class="form-card">
+        <h3>🃏 Top Cards <span style="font-size:0.75rem;font-weight:400;color:var(--muted);">— rotate every 10s</span></h3>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;">These show as the two big side-by-side cards. Rotate through all you add here every 10 seconds.</p>
+        <div class="url-fetch-row" style="margin-bottom:12px;">
+          <input type="text" class="url-input" id="topSearch" placeholder="Search products…" oninput="searchForList('top')">
+        </div>
+        <div id="topSearchResults" style="margin-bottom:14px;max-height:240px;overflow-y:auto;"></div>
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">Added (<span id="topCount">0</span>)</div>
+        <div id="topList" style="max-height:280px;overflow-y:auto;"></div>
       </div>
-      <div id="featuredSearchResults" style="margin-bottom:20px;max-height:300px;overflow-y:auto;"></div>
-      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;">Currently Featured (<span id="featuredCount">0</span>)</div>
-      <div id="featuredList"></div>
-      <button class="add-btn-main" onclick="saveFeatured()" style="margin-top:16px;">Save Featured Products →</button>
-      <div class="success-msg" id="featuredSuccess">✓ Featured products saved!</div>
+
+      <!-- CAROUSEL -->
+      <div class="form-card">
+        <h3>🎠 Carousel <span style="font-size:0.75rem;font-weight:400;color:var(--muted);">— rotates every 13s</span></h3>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;">These show in the scrolling carousel below the top cards. Add as many as you want.</p>
+        <div class="url-fetch-row" style="margin-bottom:12px;">
+          <input type="text" class="url-input" id="carouselSearch" placeholder="Search products…" oninput="searchForList('carousel')">
+        </div>
+        <div id="carouselSearchResults" style="margin-bottom:14px;max-height:240px;overflow-y:auto;"></div>
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">Added (<span id="carouselCount">0</span>)</div>
+        <div id="carouselList" style="max-height:280px;overflow-y:auto;"></div>
+      </div>
     </div>
+    <button class="add-btn-main" id="saveFeaturedBtn" style="margin-top:16px;max-width:300px;">Save Featured Products →</button>
+    <div class="success-msg" id="featuredSuccess">✓ Featured products saved!</div>
   </div>
 
 <!-- CATALOG PRODUCT MODAL -->
@@ -550,6 +566,8 @@ function switchTab(name){
 async function loadAll(){
   await Promise.all([loadOrders(),loadCatalog(),loadFeaturedAdmin()]);
   renderAnalytics();
+  const saveBtn=document.getElementById('saveFeaturedBtn');
+  if(saveBtn) saveBtn.addEventListener('click',saveFeatured);
 }
 
 // ── URL AUTO-FILL ──
@@ -1024,113 +1042,111 @@ document.addEventListener('keydown',e=>{
 });
 
 // ── FEATURED ──
-let featuredIds=[];
-let featuredProductObjs=[];
+let topIds=[],topObjs=[];
+let carouselIds=[],carouselObjs=[];
+let searchCache={};
 
 async function loadFeaturedAdmin(){
   try{
     const res=await fetch('/api/featured');
     const data=await res.json();
-    featuredProductObjs=Array.isArray(data)?data:[];
-    featuredIds=featuredProductObjs.map(p=>p.id);
-    renderFeaturedList();
-  }catch(e){featuredProductObjs=[];featuredIds=[];renderFeaturedList();}
+    topObjs=data.top||[];topIds=topObjs.map(p=>p.id);
+    carouselObjs=data.carousel||[];carouselIds=carouselObjs.map(p=>p.id);
+    renderFeaturedList('top');
+    renderFeaturedList('carousel');
+  }catch(e){}
 }
 
-function renderFeaturedList(){
-  const countEl=document.getElementById('featuredCount');
-  if(countEl) countEl.textContent=featuredIds.length;
-  const container=document.getElementById('featuredList');
+function renderFeaturedList(list){
+  const objs=list==='top'?topObjs:carouselObjs;
+  const countEl=document.getElementById(list+'Count');
+  if(countEl) countEl.textContent=objs.length;
+  const container=document.getElementById(list+'List');
   if(!container) return;
-  if(!featuredProductObjs.length){
-    container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No featured products yet. Search above to add some.</div>';
+  if(!objs.length){
+    container.innerHTML='<div style="color:var(--muted);font-size:0.82rem;">None added yet.</div>';
     return;
   }
-  container.innerHTML='<div style="font-size:0.72rem;color:var(--muted);margin-bottom:8px;">Drag to reorder · First 2 show as big cards, rest go in carousel</div>'+
-  featuredProductObjs.map((p,i)=>`
-    <div class="import-row" style="margin-bottom:8px;cursor:grab;" draggable="true"
-      ondragstart="dragStart(event,${i})" ondragover="dragOver(event)" ondrop="dragDrop(event,${i})" ondragend="dragEnd(event)">
-      <div style="color:var(--muted);font-size:1rem;cursor:grab;padding:0 4px;flex-shrink:0;">⠿</div>
+  container.innerHTML=objs.map((p,i)=>`
+    <div class="import-row" style="margin-bottom:6px;">
       ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
       <div class="import-info">
-        <div class="import-name">${p.name}</div>
-        <div class="import-meta">${p.cat} · $${p.price} ${i<2?'<span style="background:rgba(37,99,235,0.1);color:var(--blue);padding:2px 6px;border-radius:4px;font-size:0.68rem;font-weight:700;">TOP CARD</span>':'<span style="background:rgba(245,158,11,0.1);color:#D97706;padding:2px 6px;border-radius:4px;font-size:0.68rem;font-weight:700;">BANNER</span>'}</div>
+        <div class="import-name" style="font-size:0.8rem;">${p.name}</div>
+        <div class="import-meta">${p.cat} · $${p.price}</div>
       </div>
-      <button class="import-delete" onclick="removeFeatured('${p.id}')">Remove</button>
+      <button class="import-delete" data-list="${list}" data-id="${p.id}">✕</button>
     </div>`).join('');
+  // Attach remove listeners
+  container.querySelectorAll('[data-list]').forEach(btn=>{
+    btn.addEventListener('click',()=>removeFeaturedItem(btn.dataset.list, btn.dataset.id));
+  });
 }
 
-let dragSrcIdx=null;
-function dragStart(e,i){dragSrcIdx=i;e.currentTarget.style.opacity='0.4';}
-function dragEnd(e){e.currentTarget.style.opacity='1';}
-function dragOver(e){e.preventDefault();}
-function dragDrop(e,i){
-  e.preventDefault();
-  if(dragSrcIdx===null||dragSrcIdx===i) return;
-  const items=[...featuredProductObjs];
-  const [moved]=items.splice(dragSrcIdx,1);
-  items.splice(i,0,moved);
-  featuredProductObjs=items;
-  featuredIds=items.map(p=>p.id);
-  dragSrcIdx=null;
-  renderFeaturedList();
+function removeFeaturedItem(list, id){
+  if(list==='top'){topIds=topIds.filter(i=>i!==id);topObjs=topObjs.filter(p=>p.id!==id);}
+  else{carouselIds=carouselIds.filter(i=>i!==id);carouselObjs=carouselObjs.filter(p=>p.id!==id);}
+  renderFeaturedList(list);
+  searchForList(list);
 }
 
-let featuredSearchTimer;
-function searchFeatured(){
-  clearTimeout(featuredSearchTimer);
-  featuredSearchTimer=setTimeout(async()=>{
-    const q=document.getElementById('featuredSearch').value.trim();
-    const container=document.getElementById('featuredSearchResults');
+let searchTimers={};
+function searchForList(list){
+  clearTimeout(searchTimers[list]);
+  searchTimers[list]=setTimeout(async()=>{
+    const inputId=list==='top'?'topSearch':'carouselSearch';
+    const resultsId=list==='top'?'topSearchResults':'carouselSearchResults';
+    const q=document.getElementById(inputId).value.trim();
+    const container=document.getElementById(resultsId);
     if(!q){container.innerHTML='';return;}
     try{
-      const res=await fetch('/api/products?q='+encodeURIComponent(q)+'&limit=10&page=0');
+      const res=await fetch('/api/products?q='+encodeURIComponent(q)+'&limit=8&page=0');
       const data=await res.json();
-      if(!data.products?.length){container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No products found.</div>';return;}
+      searchCache[list]=data.products||[];
+      if(!data.products?.length){container.innerHTML='<div style="color:var(--muted);font-size:0.82rem;">No products found.</div>';return;}
+      const currentIds=list==='top'?topIds:carouselIds;
       container.innerHTML=data.products.map(p=>{
-        const already=featuredIds.includes(p.id);
-        return `
-        <div class="import-row" style="margin-bottom:6px;">
-          ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
+        const already=currentIds.includes(p.id);
+        return `<div class="import-row" style="margin-bottom:5px;">
+          ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🛍️</div>`}
           <div class="import-info">
-            <div class="import-name">${p.name}</div>
-            <div class="import-meta">${p.cat} · $${p.price}</div>
+            <div class="import-name" style="font-size:0.78rem;">${p.name}</div>
+            <div class="import-meta">$${p.price}</div>
           </div>
-          <button class="import-edit" data-pid="${p.id}" onclick="addFeaturedById('${p.id}')" ${already?'disabled style="opacity:0.4"':''}>${already?'Added ✓':'+ Feature'}</button>
+          <button class="import-edit" data-addlist="${list}" data-addid="${p.id}" ${already?'disabled style="opacity:0.4"':''}>${already?'✓':'+ Add'}</button>
         </div>`;
       }).join('');
-      // Store search results for addFeaturedById
-      window.__searchResults=data.products;
-    }catch(e){container.innerHTML='<div style="color:var(--red);font-size:0.84rem;">Search failed.</div>';}
+      container.querySelectorAll('[data-addlist]').forEach(btn=>{
+        btn.addEventListener('click',()=>addToFeaturedList(btn.dataset.addlist,btn.dataset.addid));
+      });
+    }catch(e){container.innerHTML='<div style="color:var(--red);font-size:0.82rem;">Search failed.</div>';}
   },400);
 }
 
-function addFeaturedById(id){
-  const p=(window.__searchResults||[]).find(x=>x.id===id);
-  if(!p||featuredIds.includes(id)) return;
-  featuredIds.push(id);
-  featuredProductObjs.push(p);
-  renderFeaturedList();
-  searchFeatured();
-}
-
-function removeFeatured(id){
-  featuredIds=featuredIds.filter(i=>i!==id);
-  featuredProductObjs=featuredProductObjs.filter(p=>p.id!==id);
-  renderFeaturedList();
-  searchFeatured();
+function addToFeaturedList(list, id){
+  const cache=searchCache[list]||[];
+  const p=cache.find(x=>x.id===id);
+  if(!p) return;
+  if(list==='top'){
+    if(topIds.includes(id)) return;
+    topIds.push(id); topObjs.push(p);
+  } else {
+    if(carouselIds.includes(id)) return;
+    carouselIds.push(id); carouselObjs.push(p);
+  }
+  renderFeaturedList(list);
+  searchForList(list);
 }
 
 async function saveFeatured(){
   try{
     const res=await fetch('/api/featured',{method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ids:featuredIds})});
+      body:JSON.stringify({topIds,carouselIds})});
     if(!res.ok) throw new Error('Save failed');
     const msg=document.getElementById('featuredSuccess');
     msg.style.display='block';
     setTimeout(()=>msg.style.display='none',3000);
-  }catch(e){alert('Failed to save featured products.');}
+  }catch(e){alert('Failed to save: '+e.message);}
 }
 </script>
 </body>

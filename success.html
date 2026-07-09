@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — Wibilow</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#F8F9FA;color:#111827;font-family:'Inter',sans-serif;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.card{background:#fff;border:1px solid #E9ECEF;border-radius:20px;padding:48px 40px;
+  max-width:560px;width:100%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.06);}
+.check{width:72px;height:72px;background:#ECFDF5;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;margin:0 auto 24px;font-size:2rem;}
+h1{font-size:1.8rem;font-weight:700;color:#111827;margin-bottom:8px;}
+.subtitle{color:#6B7280;font-size:0.95rem;line-height:1.6;margin-bottom:32px;}
+.order-box{background:#F8F9FA;border:1px solid #E9ECEF;border-radius:12px;padding:20px;margin-bottom:28px;text-align:left;}
+.order-box-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6B7280;margin-bottom:14px;}
+.order-row{display:flex;justify-content:space-between;font-size:0.86rem;padding:6px 0;border-bottom:1px solid #E9ECEF;}
+.order-row:last-child{border-bottom:none;}
+.order-row .label{color:#6B7280;}
+.order-row .value{font-weight:600;color:#111827;}
+.order-row .value.blue{font-family:'JetBrains Mono',monospace;color:#2563EB;}
+.items-list{margin-top:14px;}
+.item-row{display:flex;justify-content:space-between;font-size:0.84rem;padding:6px 0;
+  border-bottom:1px solid #E9ECEF;}
+.item-row:last-child{border-bottom:none;}
+.item-name{color:#111827;font-weight:500;flex:1;margin-right:12px;}
+.item-price{font-family:'JetBrains Mono',monospace;color:#2563EB;font-weight:700;flex-shrink:0;}
+.info-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:16px;
+  margin-bottom:24px;font-size:0.86rem;color:#1D4ED8;line-height:1.6;text-align:left;}
+.btn{display:inline-block;background:#2563EB;color:#fff;padding:13px 32px;border-radius:10px;
+  font-weight:600;font-size:0.95rem;text-decoration:none;transition:background 0.2s;}
+.btn:hover{background:#1D4ED8;}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;margin-top:28px;
+  display:block;text-decoration:none;}
+.logo .w{color:#2563EB;}.logo .l{color:#0891B2;}
+.loading{color:#6B7280;font-size:0.9rem;padding:20px 0;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="check">✓</div>
+  <h1>Order Confirmed!</h1>
+  <p class="subtitle">Thank you for shopping with Wibilow. Your order has been received and will be processed shortly.</p>
+
+  <div id="orderDetails">
+    <div class="loading">Loading order details…</div>
+  </div>
+
+  <div class="info-box">
+    📦 Your items ship directly from our global suppliers. Delivery typically takes <strong>7–21 business days</strong>. You'll receive tracking info via email once your order ships.
+  </div>
+
+  <a href="/" class="btn">Continue Shopping →</a>
+  <a href="/" class="logo"><span class="w">Wibi</span><span class="l">low</span></a>
+</div>
+
+<script>
+async function loadOrder(){
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  const container = document.getElementById('orderDetails');
+
+  if(!sessionId){
+    container.innerHTML='';
+    return;
+  }
+
+  try{
+    const res = await fetch('/api/receipt?session_id='+sessionId);
+    const data = await res.json();
+    if(data.error||!data.session){container.innerHTML='';return;}
+
+    const session = data.session;
+    const items = data.items||[];
+    const addr = session.shipping?.address||session.customer_details?.address||{};
+    const name = session.shipping?.name||session.customer_details?.name||'';
+    const total = ((session.amount_total||0)/100).toFixed(2);
+
+    container.innerHTML=`
+      <div class="order-box">
+        <div class="order-box-title">Order Summary</div>
+        <div class="order-row"><span class="label">Order ID</span><span class="value blue">${session.id.slice(-12).toUpperCase()}</span></div>
+        <div class="order-row"><span class="label">Total</span><span class="value blue">$${total}</span></div>
+        ${name?`<div class="order-row"><span class="label">Name</span><span class="value">${name}</span></div>`:''}
+        ${session.customer_details?.email?`<div class="order-row"><span class="label">Email</span><span class="value">${session.customer_details.email}</span></div>`:''}
+        ${addr.line1?`<div class="order-row"><span class="label">Ship to</span><span class="value">${addr.line1}${addr.city?', '+addr.city:''}${addr.state?', '+addr.state:''}${addr.postal_code?' '+addr.postal_code:''}</span></div>`:''}
+        ${items.length?`
+        <div class="items-list">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6B7280;margin-bottom:8px;padding-top:8px;border-top:1px solid #E9ECEF;">Items</div>
+          ${items.map(item=>`
+            <div class="item-row">
+              <div class="item-name">${item.description} ×${item.quantity}</div>
+              <div class="item-price">$${((item.amount_total||0)/100).toFixed(2)}</div>
+            </div>`).join('')}
+        </div>`:''}
+      </div>`;
+  }catch(e){
+    container.innerHTML='';
+  }
+}
+loadOrder();
+</script>
+</body>
+</html>

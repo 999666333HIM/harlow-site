@@ -487,28 +487,42 @@ let topCardIndex=0,topCardTimer=null;
 let bannerPage=0,ITEMS_PER_PAGE=4;
 
 // ── FEATURED ──
+let topCardProducts=[];
+let carouselProducts=[];
+let topCardIndex=0,topCardTimer=null;
+let bannerAutoTimer=null;
+
 async function loadFeatured(){
   try{
     const res=await fetch('/api/featured');
     const data=await res.json();
-    if(!data||!data.length) return;
-    featuredProducts=data;
-    renderFeatured();
+    topCardProducts=data.top||[];
+    carouselProducts=data.carousel||[];
+    featuredProducts=[...topCardProducts,...carouselProducts];
+    if(!topCardProducts.length&&!carouselProducts.length) return;
+    document.getElementById('featuredSection').classList.remove('hidden');
+    if(topCardProducts.length) renderTopCards();
+    if(carouselProducts.length){
+      renderBanner();
+      startBannerAutoTimer();
+    }
   }catch(e){}
 }
 
-function renderFeatured(){
-  if(!featuredProducts.length) return;
-  document.getElementById('featuredSection').classList.remove('hidden');
-  renderTopCards();
-  renderBanner();
+function startBannerAutoTimer(){
+  if(bannerAutoTimer) clearInterval(bannerAutoTimer);
+  bannerAutoTimer=setInterval(()=>{
+    const totalPages=Math.ceil(carouselProducts.length/ITEMS_PER_PAGE);
+    bannerPage=(bannerPage+1)%totalPages;
+    updateBannerPosition();
+  },13000);
 }
 
 // TOP 2 ROTATING CARDS
 function renderTopCards(){
   const top=[
-    featuredProducts[topCardIndex % featuredProducts.length],
-    featuredProducts[(topCardIndex+1) % featuredProducts.length],
+    topCardProducts[topCardIndex % Math.max(topCardProducts.length,1)],
+    topCardProducts[(topCardIndex+1) % Math.max(topCardProducts.length,1)],
   ].filter(Boolean);
   const container=document.getElementById('featuredTop');
   container.innerHTML=top.map((p,slot)=>{
@@ -545,7 +559,7 @@ function renderTopCards(){
 function startTopCardTimer(){
   if(topCardTimer) clearInterval(topCardTimer);
   topCardTimer=setInterval(()=>{
-    topCardIndex=(topCardIndex+2)%featuredProducts.length;
+    topCardIndex=(topCardIndex+2)%Math.max(topCardProducts.length,1);
     renderTopCards();
   },10000);
 }
@@ -592,7 +606,7 @@ function updateFeaturedCardUI(id){
 // CAROUSEL BANNER
 function renderBanner(){
   const banner=document.getElementById('featuredBanner');
-  if(featuredProducts.length<1){banner.style.display='none';return;}
+  if(carouselProducts.length<1){banner.style.display='none';return;}
   banner.style.display='block';
   const track=document.getElementById('bannerTrack');
   track.innerHTML=featuredProducts.map(p=>{
@@ -612,14 +626,14 @@ function renderBanner(){
     </div>`;
   }).join('');
   // Build dots — one per page of 4
-  const totalPages=Math.ceil(featuredProducts.length/ITEMS_PER_PAGE);
+  const totalPages=Math.ceil(carouselProducts.length/ITEMS_PER_PAGE);
   const dots=document.getElementById('bannerDots');
   dots.innerHTML=Array.from({length:totalPages},(_,i)=>`<div class="banner-dot ${i===0?'active':''}" onclick="goToBannerPage(${i})"></div>`).join('');
   updateBannerPosition();
 }
 
 function bannerNav(delta){
-  const totalPages=Math.ceil(featuredProducts.length/ITEMS_PER_PAGE);
+  const totalPages=Math.ceil(carouselProducts.length/ITEMS_PER_PAGE);
   bannerPage=Math.max(0,Math.min(totalPages-1,bannerPage+delta));
   updateBannerPosition();
 }
@@ -636,7 +650,7 @@ function updateBannerPosition(){
   const itemWidth=track.parentElement.offsetWidth/ITEMS_PER_PAGE;
   const offset=bannerPage*ITEMS_PER_PAGE*(itemWidth+12);
   track.style.transform=`translateX(-${offset}px)`;
-  const totalPages=Math.ceil(featuredProducts.length/ITEMS_PER_PAGE);
+  const totalPages=Math.ceil(carouselProducts.length/ITEMS_PER_PAGE);
   document.querySelectorAll('.banner-dot').forEach((d,i)=>d.classList.toggle('active',i===bannerPage));
   const prev=document.getElementById('bannerPrev');
   const next=document.getElementById('bannerNext');
