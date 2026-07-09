@@ -15,10 +15,11 @@ export async function onRequest(context){
 
   if(cat){ where += ' AND cat = ?'; params.push(cat); }
   if(q){
-  const words = q.trim().split(/\s+/);
-  for(const word of words){
-    where += ' AND name LIKE ?';
-    params.push('%'+word+'%');
+ if(q){
+  const words = q.trim().split(/\s+/).filter(w=>w.length>1);
+  if(words.length){
+    where += ' AND (' + words.map(()=>'name LIKE ?').join(' OR ') + ')';
+    words.forEach(w=>params.push('%'+w+'%'));
   }
 }
   let orderBy = 'ORDER BY reviews DESC';
