@@ -758,7 +758,11 @@ async function fetchProducts(reset=false){
     document.getElementById('productCount').textContent=totalProducts.toLocaleString()+' products';
     renderCats();
     appendProducts(data.products);
-if(searchQ) document.getElementById('productGrid').scrollIntoView({behavior:'smooth',block:'start'});
+if(searchQ){
+  setTimeout(()=>{
+    document.querySelector('.products-area').scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
+}
     const wrap=document.getElementById('loadMoreWrap');
     if(products.length<totalProducts){
       wrap.style.display='block';
