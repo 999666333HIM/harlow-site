@@ -6,7 +6,7 @@ export async function onRequest(context){
 
   try{
     const [sessionRes, itemsRes] = await Promise.all([
-      fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}?expand[]=shipping_details`,{
+      fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`,{
         headers:{'Authorization':'Bearer '+env.STRIPE_SECRET_KEY}
       }),
       fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}/line_items?limit=100`,{
