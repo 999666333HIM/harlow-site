@@ -483,14 +483,13 @@ const PAGE_SIZE=50;
 let products=[],cart=[],activeCat='All',searchQ='';
 let currentPage=0,totalProducts=0,loading=false;
 let featuredProducts=[];
-let topCardIndex=0,topCardTimer=null;
-let bannerPage=0,ITEMS_PER_PAGE=4;
 
 // ── FEATURED ──
 let topCardProducts=[];
 let carouselProducts=[];
 let topCardIndex=0,topCardTimer=null;
 let bannerAutoTimer=null;
+let bannerPage=0,ITEMS_PER_PAGE=4;
 
 async function loadFeatured(){
   try{
