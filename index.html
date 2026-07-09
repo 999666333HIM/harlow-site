@@ -396,6 +396,16 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
   </div>
 </div>
 
+<!-- RANDOM PICKS -->
+<div class="featured-section" id="randomSection" style="display:none;padding-top:0;">
+  <div class="featured-title">🎲 Discover Something New</div>
+  <div class="featured-banner" id="randomBanner">
+    <div class="banner-viewport">
+      <div class="banner-track" id="randomTrack"></div>
+    </div>
+  </div>
+</div>
+
 <div class="cat-bar" id="catBar"></div>
 
 <div class="main" id="products">
@@ -655,6 +665,71 @@ function updateBannerPosition(){
   const next=document.getElementById('bannerNext');
   if(prev) prev.disabled=bannerPage===0;
   if(next) next.disabled=bannerPage>=totalPages-1;
+}
+
+// ── RANDOM PICKS ──
+let randomProducts=[];
+let randomPage=0;
+let randomTimer=null;
+const RANDOM_VISIBLE=4;
+
+async function loadRandomPicks(){
+  try{
+    // Fetch a batch of random products
+    const res=await fetch('/api/products?limit=50&page=0');
+    const data=await res.json();
+    randomProducts=data.products||[];
+    if(randomProducts.length<4){
+      // Fallback: fetch first 50 products
+      const res2=await fetch('/api/products?limit=50&page=0');
+      const data2=await res2.json();
+      randomProducts=data2.products||[];
+    }
+    // Shuffle
+    for(let i=randomProducts.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [randomProducts[i],randomProducts[j]]=[randomProducts[j],randomProducts[i]];
+    }
+    if(randomProducts.length>=4) renderRandomPicks();
+  }catch(e){}
+}
+
+function renderRandomPicks(){
+  if(!randomProducts.length) return;
+  document.getElementById('randomSection').style.display='block';
+  const track=document.getElementById('randomTrack');
+  track.innerHTML=randomProducts.map(p=>`
+    <div class="banner-item" onclick="openModal(products.find(x=>x.id==='${p.id}')||randomProducts.find(x=>x.id==='${p.id}'))">
+      <div class="banner-item-img">
+        ${p.thumbnail?`<img src="${p.thumbnail}" alt="${p.name}">`:`<span>${p.icon||'🛍️'}</span>`}
+      </div>
+      <div class="banner-item-cat">${p.cat}</div>
+      <div class="banner-item-name">${p.name}</div>
+      <div class="banner-item-price">$${p.price}</div>
+      <button class="banner-item-btn" onclick="event.stopPropagation();addRandomToCart('${p.id}')">+ Add</button>
+    </div>`).join('');
+  startRandomTimer();
+}
+
+function addRandomToCart(id){
+  const p=randomProducts.find(x=>x.id===id)||products.find(x=>x.id===id);
+  if(!p) return;
+  const idx=cart.findIndex(c=>c.id===id);
+  if(idx>-1){cart[idx].qty++;}else{cart.push({...p,qty:1});}
+  renderCart();updateCount();showToast('✓ Added to cart');
+}
+
+function startRandomTimer(){
+  if(randomTimer) clearInterval(randomTimer);
+  randomTimer=setInterval(()=>{
+    const totalPages=Math.ceil(randomProducts.length/RANDOM_VISIBLE);
+    randomPage=(randomPage+1)%totalPages;
+    const track=document.getElementById('randomTrack');
+    if(track){
+      const itemWidth=track.parentElement.offsetWidth/RANDOM_VISIBLE;
+      track.style.transform=`translateX(-${randomPage*RANDOM_VISIBLE*(itemWidth+12)}px)`;
+    }
+  },5000);
 }
 
 // ── PRODUCTS ──
@@ -940,6 +1015,7 @@ document.getElementById('priceMax').addEventListener('input',()=>fetchProducts(t
 document.getElementById('sortSelect').addEventListener('change',()=>fetchProducts(true));
 
 loadFeatured();
+loadRandomPicks();
 fetchProducts(true);
 </script>
 </body>
