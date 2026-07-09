@@ -1017,10 +1017,11 @@ let searchTimer;
 document.getElementById('searchInput').addEventListener('input',e=>{
   searchQ=e.target.value;
   clearTimeout(searchTimer);
-  searchTimer=setTimeout(()=>{
-    fetchProducts(true);
-    document.getElementById('products').scrollIntoView({behavior:'smooth'});
-  },400);
+  searchTimer=setTimeout(()=>fetchProducts(true),400);
+});
+document.getElementById('searchInput').addEventListener('focus',()=>{
+  window.location.hash='';
+  window.location.hash='products';
 });
 document.getElementById('priceMin').addEventListener('input',()=>fetchProducts(true));
 document.getElementById('priceMax').addEventListener('input',()=>fetchProducts(true));
