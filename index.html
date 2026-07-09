@@ -669,14 +669,6 @@ function renderRandomPicks(){
   startRandomTimer();
 }
 
-function addRandomToCart(id){
-  const p=randomProducts.find(x=>x.id===id)||products.find(x=>x.id===id);
-  if(!p) return;
-  const idx=cart.findIndex(c=>c.id===id);
-  if(idx>-1){cart[idx].qty++;}else{cart.push({...p,qty:1});}
-  renderCart();updateCount();showToast('✓ Added to cart');
-}
-
 function startRandomTimer(){
   if(randomTimer) clearInterval(randomTimer);
   randomTimer=setInterval(()=>{
@@ -684,8 +676,9 @@ function startRandomTimer(){
     randomPage=(randomPage+1)%totalPages;
     const track=document.getElementById('randomTrack');
     if(track){
-      const itemWidth=track.parentElement.offsetWidth/RANDOM_VISIBLE;
-      track.style.transform=`translateX(-${randomPage*RANDOM_VISIBLE*(itemWidth+12)}px)`;
+      const viewportWidth=track.parentElement.offsetWidth;
+      const offset=randomPage*viewportWidth;
+      track.style.transform=`translateX(-${offset}px)`;
     }
   },5000);
 }
