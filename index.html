@@ -760,7 +760,11 @@ async function fetchProducts(reset=false){
     appendProducts(data.products);
 if(searchQ){
   setTimeout(()=>{
-    document.querySelector('.products-area').scrollIntoView({behavior:'smooth',block:'start'});
+    // Hide hero/featured when searching, show when not
+const searching = searchQ.length > 0;
+document.querySelector('.hero').style.display = searching ? 'none' : 'block';
+document.getElementById('featuredSection').style.display = searching ? 'none' : 'block';
+document.getElementById('randomSection').style.display = searching ? 'none' : 'block';
   },100);
 }
     const wrap=document.getElementById('loadMoreWrap');
