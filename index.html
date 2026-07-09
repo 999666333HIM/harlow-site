@@ -656,7 +656,8 @@ async function loadRandomPicks(){
 function renderRandomPicks(){
   if(!randomProducts.length) return;
   document.getElementById('randomSection').style.display='block';
-  document.getElementById('randomTrack').innerHTML=randomProducts.map(p=>`
+  const track=document.getElementById('randomTrack');
+  track.innerHTML=randomProducts.map(p=>`
     <div class="banner-item" onclick="openModal(products.find(x=>x.id==='${p.id}')||randomProducts.find(x=>x.id==='${p.id}'))">
       <div class="banner-item-img">
         ${p.thumbnail?`<img src="${p.thumbnail}" alt="${p.name}">`:`<span>${p.icon||'🛍️'}</span>`}
@@ -666,23 +667,33 @@ function renderRandomPicks(){
       <div class="banner-item-price">$${p.price}</div>
       <button class="banner-item-btn" onclick="event.stopPropagation();addRandomToCart('${p.id}')">+ Add</button>
     </div>`).join('');
+  // Set exact widths after render
+  requestAnimationFrame(()=>{
+    const viewport=track.parentElement.offsetWidth;
+    const gap=12;
+    const itemW=(viewport-(gap*(RANDOM_VISIBLE-1)))/RANDOM_VISIBLE;
+    track.querySelectorAll('.banner-item').forEach(el=>{
+      el.style.width=itemW+'px';
+      el.style.flexShrink='0';
+    });
+  });
   startRandomTimer();
 }
 
 function startRandomTimer(){
   if(randomTimer) clearInterval(randomTimer);
   randomTimer=setInterval(()=>{
+    const track=document.getElementById('randomTrack');
+    if(!track) return;
     const totalPages=Math.ceil(randomProducts.length/RANDOM_VISIBLE);
     randomPage=(randomPage+1)%totalPages;
-    const track=document.getElementById('randomTrack');
-    if(track){
-      const viewportWidth=track.parentElement.offsetWidth;
-      const offset=randomPage*viewportWidth;
-      track.style.transform=`translateX(-${offset}px)`;
-    }
+    const viewport=track.parentElement.offsetWidth;
+    const gap=12;
+    const itemW=(viewport-(gap*(RANDOM_VISIBLE-1)))/RANDOM_VISIBLE;
+    const offset=randomPage*((itemW+gap)*RANDOM_VISIBLE);
+    track.style.transform=`translateX(-${offset}px)`;
   },5000);
 }
-
 // ── PRODUCTS ──
 async function fetchProducts(reset=false){
   if(loading) return;
