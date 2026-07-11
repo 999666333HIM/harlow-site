@@ -24,6 +24,7 @@ export async function onRequest(context){
     params.append('shipping_address_collection[allowed_countries][2]','GB');
     params.append('shipping_address_collection[allowed_countries][3]','AU');
     params.append('payment_method_types[0]','card');
+params.append('automatic_tax[enabled]','true');
 
     line_items.forEach((item,i)=>{
       params.append(`line_items[${i}][price_data][currency]`,item.price_data.currency);
