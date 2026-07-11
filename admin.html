@@ -738,9 +738,10 @@ function buildOrderCard(order,isFulfilled,fulfilledTs){
         </div>
       </div>
       <div class="order-actions">
-        ${!isFulfilled
-          ?`<button class="action-btn success" onclick="markFulfilled('${order.id}')">✓ Mark as Fulfilled</button>`
-          :`<button class="action-btn warning" onclick="markPending('${order.id}')">↩ Send back to Orders</button>`}
+       ${!isFulfilled
+  ?`<button class="action-btn success" onclick="markFulfilled('${order.id}')">✓ Mark as Fulfilled</button>`
+  :`<button class="action-btn warning" onclick="markPending('${order.id}')">↩ Send back to Orders</button>`}
+<button class="action-btn" style="background:rgba(220,38,38,0.08);color:#DC2626;border:1px solid rgba(220,38,38,0.2);" onclick="deleteOrder('${order.id}')">🗑 Delete</button>
       </div>
     </div>`;
 }
@@ -812,7 +813,17 @@ function markPending(id){
   delete f[id];localStorage.setItem('wb2_fulfilled',JSON.stringify(f));
   updateOrderStats();renderOrders();renderFulfilled();renderAnalytics();
 }
-
+async function deleteOrder(id){
+  if(!confirm('Delete this order permanently? This cannot be undone.')) return;
+  try{
+    await fetch('/api/delete-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderId:id})});
+    allOrders=allOrders.filter(o=>o.id!==id);
+    const f=JSON.parse(localStorage.getItem('wb2_fulfilled')||'{}');
+    delete f[id];
+    localStorage.setItem('wb2_fulfilled',JSON.stringify(f));
+    updateOrderStats();renderOrders();renderFulfilled();renderAnalytics();
+  }catch(e){alert('Failed to delete order.');}
+}
 // ── ANALYTICS ──
 function renderAnalytics(){
   const f=JSON.parse(localStorage.getItem('wb2_fulfilled')||'{}');
