@@ -918,6 +918,29 @@ async function addProduct(){
   btn.textContent=editingId?'Save Changes →':'Add to Store →';btn.disabled=false;
 }
 
+function editFromCatalog(index){
+  const p=filteredProducts[index];
+  if(!p) return;
+  editingId=p.id;
+  document.getElementById('pName').value=p.name||'';
+  document.getElementById('pPrice').value=p.price||'';
+  document.getElementById('pImage').value=p.thumbnail||'';
+  document.getElementById('pSourceUrl').value=p.source_url||'';
+  document.getElementById('pDesc').value=p.desc||'';
+  document.getElementById('pStock').value=p.stock||50;
+  document.getElementById('pRating').value=p.rating||4.5;
+  document.getElementById('pMarkup').value='';
+  const catSel=document.getElementById('pCat');
+  const catExists=[...catSel.options].some(o=>o.value===p.cat);
+  if(catExists) catSel.value=p.cat;
+  else catSel.value='General';
+  document.getElementById('pCatCustom').style.display='none';
+  document.getElementById('addProductBtn').textContent='Save Changes →';
+  updatePreview();
+  switchTab('add');
+  setTimeout(()=>{document.getElementById('pName').scrollIntoView({behavior:'smooth'});document.getElementById('pName').focus();},100);
+}
+
 // ── CATALOG ──
 async function loadCatalog(){
   try{
