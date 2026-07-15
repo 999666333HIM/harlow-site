@@ -8,7 +8,7 @@ export async function onRequest(context){
     const body = await request.json();
 
     if(request.method==='DELETE'){
-      await env.DB.prepare('DELETE FROM products WHERE id = ? AND manual = 1')
+      await env.DB.prepare('DELETE FROM products WHERE id=?')
         .bind(body.productId).run();
       return new Response(JSON.stringify({ok:true}),{headers:{'Content-Type':'application/json'}});
     }
