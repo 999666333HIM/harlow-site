@@ -449,14 +449,7 @@ textarea.form-input{resize:vertical;min-height:68px;}
           <div class="error-msg" id="errorMsg"></div>
         </div>
 
-        <!-- IMPORTS SECTION -->
-        <div class="imports-section">
-          <div class="imports-header">
-            <div class="imports-title">Extension Imports & Manual Products</div>
-            <button class="load-imports-btn" onclick="loadImports()">Load Imports →</button>
-          </div>
-          <div id="importsList"><div style="color:var(--muted);font-size:0.84rem;">Click "Load Imports" to see all products added via the extension or manually.</div></div>
-        </div>
+
       </div>
       <div>
         <div class="preview-label">Live preview</div>
@@ -499,7 +492,7 @@ textarea.form-input{resize:vertical;min-height:68px;}
         <thead>
           <tr>
             <th>Product</th><th>Sell price</th><th>Est. profit</th>
-            <th>Stock</th><th>Source</th><th>Link</th>
+            <th>Stock</th><th>Source</th><th>Link</th><th>Actions</th>
           </tr>
         </thead>
         <tbody id="catalogBody"></tbody>
@@ -738,10 +731,9 @@ function buildOrderCard(order,isFulfilled,fulfilledTs){
         </div>
       </div>
       <div class="order-actions">
-       ${!isFulfilled
-  ?`<button class="action-btn success" onclick="markFulfilled('${order.id}')">✓ Mark as Fulfilled</button>`
-  :`<button class="action-btn warning" onclick="markPending('${order.id}')">↩ Send back to Orders</button>`}
-<button class="action-btn" style="background:rgba(220,38,38,0.08);color:#DC2626;border:1px solid rgba(220,38,38,0.2);" onclick="deleteOrder('${order.id}')">🗑 Delete</button>
+        ${!isFulfilled
+          ?`<button class="action-btn success" onclick="markFulfilled('${order.id}')">✓ Mark as Fulfilled</button>`
+          :`<button class="action-btn warning" onclick="markPending('${order.id}')">↩ Send back to Orders</button>`}
       </div>
     </div>`;
 }
@@ -813,17 +805,7 @@ function markPending(id){
   delete f[id];localStorage.setItem('wb2_fulfilled',JSON.stringify(f));
   updateOrderStats();renderOrders();renderFulfilled();renderAnalytics();
 }
-async function deleteOrder(id){
-  if(!confirm('Delete this order permanently? This cannot be undone.')) return;
-  try{
-    await fetch('/api/delete-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderId:id})});
-    allOrders=allOrders.filter(o=>o.id!==id);
-    const f=JSON.parse(localStorage.getItem('wb2_fulfilled')||'{}');
-    delete f[id];
-    localStorage.setItem('wb2_fulfilled',JSON.stringify(f));
-    updateOrderStats();renderOrders();renderFulfilled();renderAnalytics();
-  }catch(e){alert('Failed to delete order.');}
-}
+
 // ── ANALYTICS ──
 function renderAnalytics(){
   const f=JSON.parse(localStorage.getItem('wb2_fulfilled')||'{}');
@@ -936,67 +918,6 @@ async function addProduct(){
   btn.textContent=editingId?'Save Changes →':'Add to Store →';btn.disabled=false;
 }
 
-// ── IMPORTS ──
-async function loadImports(){
-  const container=document.getElementById('importsList');
-  container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">Loading…</div>';
-  try{
-    let allImports=[];
-    let page=0;
-    while(true){
-      const res=await fetch('/api/products?limit=500&page='+page);
-      const data=await res.json();
-      const manual=(data.products||[]).filter(p=>p.manual);
-      allImports=[...allImports,...manual];
-      if(allImports.length>=data.total||!data.products?.length||(data.products||[]).filter(p=>p.manual).length===0&&page>0) break;
-      page++;
-      if(page>10) break;
-    }
-    if(!allImports.length){
-      container.innerHTML='<div style="color:var(--muted);font-size:0.84rem;">No imported or manual products found.</div>';
-      return;
-    }
-    container.innerHTML=allImports.map(p=>`
-      <div class="import-row">
-        ${p.thumbnail?`<img src="${p.thumbnail}" class="import-thumb" alt="">`:`<div class="import-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛍️</div>`}
-        <div class="import-info">
-          <div class="import-name" title="${p.name}">${p.name}</div>
-          <div class="import-meta">${p.cat} · Stock: ${p.stock}${p.source_url?` · <a href="${p.source_url}" target="_blank" style="color:var(--blue);">Source ↗</a>`:''}</div>
-        </div>
-        <div class="import-price">$${p.price}</div>
-        <button class="import-edit" onclick="editImport(${JSON.stringify(p).replace(/"/g,'&quot;')})">Edit</button>
-        <button class="import-delete" onclick="deleteImport('${p.id}',this)">Remove</button>
-      </div>`).join('');
-  }catch(e){
-    container.innerHTML='<div style="color:var(--red);font-size:0.84rem;">Failed to load imports.</div>';
-  }
-}
-
-function editImport(p){
-  editingId=p.id;
-  document.getElementById('pName').value=p.name||'';
-  document.getElementById('pPrice').value=p.price||'';
-  document.getElementById('pCat').value=p.cat||'General';
-  document.getElementById('pImage').value=p.thumbnail||'';
-  document.getElementById('pSourceUrl').value=p.source_url||'';
-  document.getElementById('pDesc').value=p.desc||'';
-  document.getElementById('pStock').value=p.stock||50;
-  document.getElementById('pRating').value=p.rating||4.5;
-  document.getElementById('pMarkup').value='';
-  document.getElementById('addProductBtn').textContent='Save Changes →';
-  updatePreview();
-  document.getElementById('pName').scrollIntoView({behavior:'smooth'});
-  document.getElementById('pName').focus();
-}
-
-async function deleteImport(id,btn){
-  if(!confirm('Remove this product from your store?')) return;
-  try{
-    await fetch('/api/add-product',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:id})});
-    btn.closest('.import-row').remove();
-  }catch(e){alert('Failed to delete product.');}
-}
-
 // ── CATALOG ──
 async function loadCatalog(){
   try{
@@ -1089,7 +1010,8 @@ function renderCatalog(){
       <td><span class="mono ${pc}">${profit>0?'+':''}$${profit}</span></td>
       <td><span class="${sc}">${p.stock||'?'} left</span></td>
       <td><span class="source-badge">${p.manual?'Manual':p.source_url?.includes('aliexpress')?'AliExpress':'External'}</span></td>
-      <td>${p.source_url?`<a href="${p.source_url}" target="_blank" class="ext-link" onclick="event.stopPropagation()">View ↗</a>`:'—'}</td>`;
+      <td>${p.source_url?`<a href="${p.source_url}" target="_blank" class="ext-link" onclick="event.stopPropagation()">View ↗</a>`:'—'}</td>
+      <td><button class="import-edit" onclick="event.stopPropagation();editFromCatalog(${i})" style="padding:4px 10px;font-size:0.72rem;">✏️ Edit</button></td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1128,7 +1050,7 @@ function renderCatModal(){
       ${p.hot?'<span class="cat-modal-tag" style="color:var(--blue);">🔥 HOT</span>':''}
     </div>
     ${p.source_url?`<a href="${p.source_url}" target="_blank" class="cat-modal-link">View source ↗</a>`:''}
-    ${p.manual?`<button onclick="editImport(${JSON.stringify(p).replace(/"/g,'&quot;')});closeCatModal();switchTab('add')" style="padding:8px 16px;background:var(--blue);color:#fff;border:none;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:600;margin-top:4px;">Edit this product →</button>`:''}`;
+    <button onclick="editFromCatalog(catModalIndex);closeCatModal()" style="padding:8px 16px;background:var(--blue);color:#fff;border:none;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:600;margin-top:4px;">✏️ Edit this product →</button>`;
 }
 document.getElementById('catModalOverlay').addEventListener('click',e=>{if(e.target.id==='catModalOverlay')closeCatModal();});
 document.addEventListener('keydown',e=>{
